@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Vigodi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/tabulator-tables@5.5.0/dist/js/tabulator.min.js"></script>    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+    <script> tailwind.config = {darkMode:'class', theme:{extend: {},}}</script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/tabulator-tables@5.5.0/dist/css/tabulator.min.css" rel="stylesheet">
+</head>
+
+<body class="p-1 bg-white text-black dark:bg-gray-800 dark:text-white" style="font-family: 'Roboto'; font-size: 18px;">
+
+<div id="menuCont"class="cont"> <!--menu contener-->
+    <h2 class="ml-5 text-2xl mb-2 text-blue-600 dark:text-green-500">🤝 Welcome to Vigodi</h2>
+    <button class="btnM" onclick="showCont('eleCont')">✍🏻 Add Name</button>
+    <button class="btnM" onclick="showCont('ancCont')">👨‍👩‍👦‍👦 Ancestors</button>
+    <button class="btnM" onclick="viewAllData(true,true,false)">👀 All Data</button>
+    <button class="btnM" onclick="showCont('selCont')">👁️ Selected Data</button>
+    <button class="btnM" onclick="sankhya()">👀 Sankhya</button>
+    <button class="btnM" onclick="sankhyaKalariya()">👀 Kalariya Sankhya</button>
+    <button class="btnM" onclick="topStats('names')">🏅 Most Used Names</button>
+    <button class="btnM" onclick="topStats('places')">🏅 City With Heighest People</button>
+    <button class="btnM" onclick="changeTheme()">🌈 Themes</button>
+    <button class="btnM" onclick="logout()">🔐 Logout</button>
+</div>
+
+<div id ="eleCont" class="cont"> <!--inputs to add names-->
+    <input id="nokh" class="input-box" type="text"/><label for="nokh" class="label">Nokh</label>
+    <input id="name" class="input-box" type="text"/><label for="name" class="label">Name</label>
+    <input id="fName" class="input-box" type="text"/><label for="fName" class="label">Father</label>
+    <input id="mName" class="input-box" type="text"/><label for="mName" class="label">Mother</label>
+    <input id="gfName" class="input-box" type="text"/><label for="gfName" class="label">GrFather</label>
+    <input id="gmName" class="input-box" type="text"/><label for="gmName" class="label">GrMother</label>
+    <input id="mStatus" class="input-box" type="text"/><label for="mStatus" class="label">Married ??</label>
+    <input id="njmf" class="input-box" type="text"/><label for="njmf" class="label">Niyani/Jamai/Male/Female</label>
+    <input id="dob" class="input-box" type="date"/><label for="dob" class="label">Date Of Birth(optional)</label>
+    <input id="mob" class="input-box" type="number"/><label for="mob" class="label">Mob(optional)</label>
+    <input id="place" class="input-box" type="text"/><label for="place" class="label">Place(optional)</label>
+    <input id="group" class="input-box" type="text"/><label for="group" class="label">Group(A,B..)[Only for Kalariyas]</label>
+    <button class="btnBK mt-10 mb-5" onclick="showCont('menuCont')">🏠︎</button><button class="bg-green-500 text-white px-5 py-3 rounded-lg shadow-[0_8px_15px_rgba(0,0,0,0.4)] mt-10 mb-5 ml-[200px] duration-300 hover:translate-x-5" onclick="saveTransaction()">💾 Save</button>
+</div>
+
+<div id="ancCont" class="cont"> <!--inputs to select ancestors-->
+    <input id="name1" class="input-box" type="text"/><label for="name1" class="label">Name</label>
+    <input id="fName1" class="input-box" type="text"/><label for="fName1" class="label">Father</label>
+    <input id="mName1" class="input-box" type="text"/><label for="mName1" class="label">Mother</label>
+    <input id="gfName1" class="input-box" type="text"/><label for="gfName1"class="label">GrFather</label>
+    <input id="gmName1" class="input-box" type="text"/><label for="gmName1"class="label">GrMother</label>
+    <div class="d1"><button class="btnSV" onclick="startSearch()">🔍</button><span class="ml-1 mr-1">Find..............Home</span><button class="btnBK" onclick="showCont('menuCont')">🏠︎</button></div>
+    <div id="result" class="max-w-md p-2 rounded-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"></div> <!--to show ancestors-->
+</div>
+
+<div id="1" class="hidden"><button class="btnBK" onclick="showCont('menuCont')">🏠︎</button></div><div id="sanCont" class="cont"></div> <!--to show sankhya niyani,male,female....-->
+
+<div id="selCont" class="cont"> <!--to view selected columns in table-->
+    <h2 class="p-3  rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]">Select Columns</h2>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="nokh">Nokh</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="name" checked>Name</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="fName" checked>Father</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="mName" checked>Mother</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="gfName" checked>GrFather</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="gmName" checked>GrMother</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="mStatus">MStatus</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="njmf">Go/Ni/M/F</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="displayDob">DOB</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="mob">Mob No</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="place">Place</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="group">Group</label></div>
+    <div class="d1"><button class="btnSV" onclick="viewAllData(false,false,false,'x')">👀</button><span class="ml-1 mr-1">ViewTable....Home</span><button class="btnBK" onclick="showCont('menuCont')">🏠︎</button></div>
+</div>
+
+<div id="tblCont" class="hidden w-full p-2 rounded-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"> <!--table contener with search,excel,pdf,.....buttons-->
+    <div><input id="searchBox" class="px-2 h-10 text-black border-b-2 border-green-500" placeholder="Search..." type="text"/></div>
+    <div class="w-fit flex gap-2 py-2 justify-start">
+        <button id="exlbtn" class="px-4 py-1 bg-green-500 text-white rounded-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)] duration-500 hover:scale-125">XL</button>
+        <button id="pdfBtn" class="px-3 py-1 bg-blue-500 text-white rounded-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)] duration-500 hover:scale-125">PDF</button>
+        <button id="prtBtn" class="px-4 py-1 bg-yellow-500 text-white rounded-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)] duration-500 hover:scale-125">🖨️</button>
+        <button class="px-5 py-1 bg-purple-500 text-white rounded-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)] duration-500 hover:scale-125" onclick="showCont('menuCont')">🏠︎</button>
+    </div>
+    <div id="table" class="w-full rounded-lg border border-green-600 mx-auto text-[18px] font-[Roboto]"></div>
+</div>
+
+<div id="lgnCont" class="cont"> <!--login contener-->
+    <h2 class="py-3 text-xl">Enter Login Details</h2>
+    <input class="input-box" id="loginEmail" type="email" /><label class="label">Email</label>
+    <input class="input-box" id="loginPassword" type="password" /><label class="label">Password</label>
+    <button class="block mx-auto bg-green-500 text-white px-10 py-1 mt-10 rounded-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)] duration-500 hover:scale-125" onclick="login()">🏠︎ Login</button>
+</div>
+
+<script type="module">
+    import {initializeApp} 
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    
+    import {getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut,} 
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    
+    import {getFirestore, collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, query, where } 
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyDFYd3RFA0oaJ2A74cLdIm_raus_QHivX8",
+        authDomain: "vigodi-64ecd.firebaseapp.com",
+        projectId: "vigodi-64ecd",
+        storageBucket: "vigodi-64ecd.firebasestorage.app",
+        messagingSenderId: "151383854150",
+        appId: "1:151383854150:web:ce0bb6c90844203e6f0e47",
+        measurementId: "G-4VKY4HEYCG"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let cachedData = [], currentDocId = null;
+    
+    onAuthStateChanged(auth, async (user) => {
+        if (user) { 
+            window.tranCol = collection(db, (await getDoc(doc(db, "users", user.uid))).data().db);
+            await fetchAllOnce(); 
+            await loadDropdownData(); 
+            showCont('menuCont');
+        } else (showCont('lgnCont'))
+    });  
+    
+    function applyClasses(selector, classes) { document.querySelectorAll(selector).forEach(el => { el.classList.add(...classes.split(" ")); }); }
+    applyClasses(".cont", "hidden max-w-md p-2 rounded-lg dark:bg-[#2b3544] shadow-[0_8px_15px_rgba(0,0,0,0.4)]");
+    applyClasses(".btnM", "block w-full px-5 py-4 text-left shadow-[0_8px_15px_rgba(0,0,0,0.4)] rounded-b-lg duration-500 hover:scale-110");
+    applyClasses(".btnBK", "h-[50px] w-[50px] rounded-full text-[20px] bg-[radial-gradient(circle_at_25%_20%,#6dd5fa,#003366)] shadow-[0_8px_15px_rgba(0,0,0,0.4)] duration-500 hover:scale-125");
+    applyClasses(".btnSV", "h-[50px] w-[50px] rounded-full text-[20px] bg-[radial-gradient(circle_at_25%_20%,#e3524f,#5374b8)] shadow-[0_8px_15px_rgba(0,0,0,0.4)] duration-500 hover:scale-125");
+    applyClasses(".d1", "mt-5 w-[250px] rounded-[50px] text-white bg-gradient-to-r from-pink-800 to-blue-600");
+   
+    document.addEventListener('DOMContentLoaded', () => {
+        const wrapperClass = "relative mt-5";
+        const inputClass = "peer w-full px-1 border-b-2 border-gray-500 bg-transparent pt-2 focus:outline-none focus:border-yellow-600";
+        const labelClass = "absolute top-2 left-0 text-gray-500 dark:text-gray-400 transform -translate-y-6 peer-focus:-translate-y-6 peer-placeholder-shown:translate-y-0 scale-[.8] peer-placeholder-shown:scale-[1]";
+
+        document.querySelectorAll('.input-box').forEach(input => {
+            const label = input.nextElementSibling;
+            if (!label || label.tagName !== "LABEL") return;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = wrapperClass;
+            input.parentNode.insertBefore(wrapper, input);
+            wrapper.appendChild(input);
+            wrapper.appendChild(label);
+
+            input.classList.add(...inputClass.split(' '));
+            label.classList.add(...labelClass.split(' '));
+            input.setAttribute("placeholder", " ");
+            input.setAttribute("autocomplete", "off");
+
+            if (input.type === "text") {
+                input.addEventListener('input', function () {
+                    const start = this.selectionStart;
+                    const end = this.selectionEnd;
+                    this.value = this.value.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+                    this.setSelectionRange(start, end); 
+                }); 
+            }
+        });
+    });   
+    
+    window.fetchAllOnce = async function () { 
+        if (cachedData.length > 0) { return cachedData;}  
+        const snapshot = await getDocs(tranCol);
+        cachedData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
+        return cachedData; 
+    };
+    
+    window.showCont = function (...idToShow) {
+        const allIds = ['menuCont', 'eleCont', 'ancCont', 1, 'sanCont', 'selCont', 'tblCont', 'lgnCont'];
+        allIds.forEach(id => { 
+            const el = document.getElementById(id); 
+            if (el) { el.style.setProperty('display', 'none', 'important'); } 
+        });
+
+        idToShow.forEach(id => { 
+            const el = document.getElementById(id); 
+            if (el) { el.style.setProperty('display', 'block', 'important'); } 
+        });
+    };   
+
+    window.clear = function () { document.querySelectorAll("input").forEach(el => { el.value = ""; }); };
+    
+    window.loadDropdownData = async function () { 
+        const transactionsData = await fetchAllOnce();
+        const nokhSet = new Set();
+        const mnameSet = new Set();
+        const placeSet = new Set();
+
+        transactionsData.forEach((data, i) => {
+            const nokh = [data.nokh];
+            nokh.forEach((n) => { if (n && n.trim().length > 0) {nokhSet.add(n.trim()); } });
+
+            const mnames = [data.name,data.fName,data.mName,data.gfName,data.gmName];
+            mnames.forEach((n) => { if (n && n.trim().length > 0) {mnameSet.add(n.trim()); } });
+
+            const places = [data.place];
+            places.forEach((n) => { if (n && n.trim().length > 0) {placeSet.add(n.trim()); } });
+        });
+
+        const nokh_list = [...nokhSet].sort((a, b) => a.localeCompare(b));
+        const mname_list = [...mnameSet].sort((a, b) => a.localeCompare(b));
+        const place_list = [...placeSet].sort((a, b) => a.localeCompare(b));
+
+        attachDropdown(document.getElementById("nokh"), nokh_list);
+        ["name","fName","mName","gfName","gmName","name1","fName1","mName1","gfName1","gmName1"].forEach(id => attachDropdown(document.getElementById(id), mname_list));
+        attachDropdown(document.getElementById("mStatus"), ["Married","Unmarried","Vidhur","gaSwa","Swargiya"]);
+        attachDropdown(document.getElementById("njmf"), ["Niyani","Jamai","Male","Female"]);
+        attachDropdown(document.getElementById("group"), ["Delivala","PatelA","PatelB","Visrambapa"]);
+        attachDropdown(document.getElementById("place"), place_list);
+    }; 
+    
+    window.attachDropdown = function (inputElement, dataList) {
+        if (inputElement._dropdownCleanup) { inputElement._dropdownCleanup(); }
+        let wrapper = inputElement.parentElement;
+        let currentList = [];
+
+        if (!wrapper.classList.contains("relative")) {
+            wrapper = document.createElement("div");
+            wrapper.className = "relative w-full";
+            inputElement.parentNode.insertBefore(wrapper, inputElement);
+            wrapper.appendChild(inputElement);
+        }
+
+        let dropdown = document.createElement("ul");
+        dropdown.className = "absolute z-50 w-full h-[500px] overflow-y-auto hidden rounded-b text-black bg-gray-100 dark:bg-gray-700 dark:text-white";
+        wrapper.appendChild(dropdown);
+
+        function filterList() {
+            const search = inputElement.value.toLowerCase();
+            currentList = dataList.filter(item =>
+                item.toLowerCase().includes(search)
+            );
+
+            if (currentList.length > 0) {
+                populateDropdown(currentList);
+                dropdown.classList.remove("hidden");
+            } else {dropdown.classList.add("hidden"); }
+        }
+
+        function populateDropdown(list) {
+            dropdown.innerHTML = "";
+            list.forEach((item, index) => {
+                const li = document.createElement("li");
+                li.textContent = item;
+                li.dataset.index = index;
+                li.className = "block w-full max-w-md px-2 py-3 text-left cursor-pointer hover:bg-blue-600 hover:text-white border-b border-gray-400 last:border-b-0";
+                li.addEventListener("mousedown", () => {
+                    inputElement.value = item;
+                    dropdown.classList.add("hidden");
+                });
+                dropdown.appendChild(li);
+            });
+        }
+        
+        const onInput = () => {filterList();};
+        const onClick = () => {filterList();};
+        const onDocClick = (e) => {if (!wrapper.contains(e.target)) dropdown.classList.add("hidden");};
+
+        inputElement.addEventListener("input", onInput);
+        inputElement.addEventListener("click", onClick);
+        document.addEventListener("click", onDocClick);
+
+        inputElement._dropdownCleanup = () => {
+            inputElement.removeEventListener("input", onInput);
+            inputElement.removeEventListener("click", onClick);
+            if (dropdown.parentNode) dropdown.parentNode.removeChild(dropdown);
+            inputElement._dropdownCleanup = null;
+        };
+    };
+
+    window.createEditableTable = function (rows, columns, showDelete = true, showUpdate = true, editable = false) {
+        if (window.table && typeof window.table.destroy === "function") window.table.destroy();
+        const isMobile = window.innerWidth < 768;  
+        const searchId = document.getElementById('searchBox');
+
+        let fullColumns = columns.map(col => {
+            if (isMobile && col.field === "id") return { ...col, visible: false };
+            return { ...col, editor: editable ? col.editor || "input" : false };
+        });
+
+        if (!isMobile) {
+            if (showDelete) {
+                fullColumns.push({
+                    title: "",
+                    field: "__delete",
+                    formatter: () => `<div class="text-center cursor-pointer">⛔</div>`,
+                    width: 70,
+                    hozAlign: "center",
+                    cellClick: async (e, cell) => {
+                        e.stopPropagation();
+                        const rowData = cell.getRow().getData();
+                        const confirmed = confirm("Delete? Are You Sure?");
+                        if (confirmed && rowData.id) {
+                            await deleteDoc(doc(tranCol, rowData.id));
+                            cell.getRow().delete();
+                            if (cachedData) cachedData = cachedData.filter(doc => doc.id !== rowData.id);
+                        }
+                    },
+                });
+            }
+
+            if (showUpdate) {
+                fullColumns.push({
+                    title: "",
+                    field: "__update",
+                    formatter: () => `<div class="text-center cursor-pointer">✏️</div>`,
+                    width: 70,
+                    hozAlign: "center",
+                    cellClick: (e, cell) => {
+                        e.stopPropagation();
+                        const rowData = cell.getRow().getData();
+                        currentDocId = rowData.id;
+                        showTransactionContainer(rowData);
+                    },
+                });
+            }
+        }
+
+        window.table = new Tabulator(document.getElementById('table'), {
+            data: rows,
+            layout: "fitDataFill",
+            reactiveData: true,
+            rowHeight: 40,
+            maxHeight: "600px",
+            headerVisible: !isMobile,
+            columns: fullColumns,
+            rowFormatter: isMobile ? function (row) {
+                row.getElement().style.display = "block";
+                let d = row.getData();
+                let card = document.createElement("div");
+                card.className = `w-full max-w-md bg-white grid grid-cols-[100px_1fr] mb-1 text-[18px] font-[Roboto] rounded-lg border border-green-500`;
+
+                let inner = "";
+                columns.forEach(col => {
+                    if (col.field !== "__delete" && col.field !== "__update") {
+                        const val = d[col.field];
+                        if (val !== undefined && val !== null && val !== "") { 
+                            inner += ` <div class="text-gray-700 text-right px-1">${col.title}:</div> <div class="text-black px-1">${val}</div> `; 
+                        }
+                    }
+                });
+
+                if (showDelete || showUpdate) {
+                    inner += `<div class="col-span-2 pb-2 pr-5 flex justify-end gap-20 rounded-lg">`;
+                    if (showDelete) inner += `<span class="delete-btn cursor-pointer">⛔</span>`;
+                    if (showUpdate) inner += `<span class="update-btn cursor-pointer">✏️</span>`;
+                    inner += `</div>`;
+                }
+
+                card.innerHTML = inner;
+                row.getElement().innerHTML = "";
+                row.getElement().appendChild(card);
+
+                if (showDelete) {
+                    card.querySelector(".delete-btn")?.addEventListener("click", async (e) => {
+                        e.stopPropagation();
+                        const confirmed = confirm("Delete? Are You Sure?");
+                        if (confirmed && d.id) {
+                            await deleteDoc(doc(tranCol, d.id));
+                            row.delete();
+                            if (cachedData) cachedData = cachedData.filter(doc => doc.id !== d.id);
+                        }
+                    });
+                }
+
+                if (showUpdate) {
+                    card.querySelector(".update-btn")?.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        currentDocId = d.id;
+                        showTransactionContainer(d);
+                    });
+                }
+            } : undefined
+        });
+
+        document.getElementById('exlbtn')?.addEventListener("click", () => { window.table.download("xlsx", "data.xlsx", { sheetName: "Sheet1" }); });
+        document.getElementById('pdfBtn')?.addEventListener("click", () => { window.table.download("pdf", "data.pdf", { orientation: "portrait" }); });
+        document.getElementById('prtBtn')?.addEventListener("click", () => { window.table.print(false, true); });
+        bindSearch(); showCont("tblCont");
+    };    
+
+    window.bindSearch = function () {
+        document.getElementById("searchBox").addEventListener("input", function () {
+            const value = this.value.toLowerCase().trim();
+            table.setFilter(function (data) {
+                if (value === "") { return true; }
+                return Object.values(data).some(val => String(val).toLowerCase().includes(value)); 
+            }); 
+        }); 
+    };
+   
+    window.showTransactionContainer = function (rowData) {
+        clear(); 
+        showCont('eleCont');
+        
+        for (const key in rowData) {
+            if (rowData.hasOwnProperty(key)) {
+                const input = document.getElementById(key); 
+                if (input) {input.value = rowData[key] || "";} 
+            } 
+        }
+    };
+
+    window.saveTransaction = async function () { 
+        const nokh = document.getElementById("nokh").value.trim();
+        const name = document.getElementById("name").value.trim();
+        const fName = document.getElementById("fName").value.trim();
+        const mName = document.getElementById("mName").value.trim();
+        const gfName = document.getElementById("gfName").value.trim();
+        const gmName = document.getElementById("gmName").value.trim();
+        const mStatus = document.getElementById("mStatus").value.trim();
+        const njmf = document.getElementById("njmf").value.trim();
+        const dob = document.getElementById("dob").value.trim();
+        const mob = document.getElementById("mob").value;
+        const place = document.getElementById("place").value.trim();
+        const group = document.getElementById("group").value.trim();
+        
+        if (!nokh || !name || !fName || !mName || !gfName || !gmName || !mStatus || !njmf ) { 
+            return alert("Please fill first 8 fields properly"); 
+        }
+
+        const tranData = {nokh, name, fName, mName, gfName, gmName, mStatus, njmf, };
+
+        if (nokh === "Kalariya") {
+            if (!group) return alert('Please select one of the group(PatelA,PatelB...)')
+            tranData.group = group;
+            if (njmf === "Niyani") tranData.njgp = "Niyani";
+            if (njmf === "Jamai") tranData.njgp = "Jamai";
+            if (njmf === "Male") tranData.njgp = "Gotri";
+            if (njmf === "Female") tranData.njgp = "Putravadhu";
+        }
+
+        if (dob) tranData.dob = dob;
+        if (mob) tranData.mob = Number(mob);
+        if (place) tranData.place = place;
+        if (mStatus === "Swargiya") tranData.place = "Vaikunth";
+        
+        if (currentDocId) {
+            const docRef = doc(tranCol, currentDocId); 
+            await updateDoc(docRef, tranData);
+            const index = cachedData.findIndex(item => item.id === docRef.id);
+            
+            if (index !== -1) { cachedData[index] = { ...cachedData[index], ...tranData }; }
+            viewAllData();
+        } else {
+            const newDocRef = await addDoc(tranCol, tranData); 
+            cachedData.push({ id: newDocRef.id, ...tranData });
+        }
+        
+        clear(); 
+        currentDocId = null; 
+        loadDropdownData();
+    };
+    
+    function findSpecificDocument(name, fName, mName, gfName, gmName, data) {
+        if (!data || data.length === 0) {return null; }
+        
+        const result = data.find(doc => {
+            if (doc.name !== name) { return false;}
+            if (fName && doc.fName !== fName) {return false;}
+            if (mName && doc.mName !== mName) {return false;}
+            if (gfName && doc.gfName !== gfName) {return false;}
+            if (gmName && doc.gmName !== gmName) {return false;}
+            return true;
+        });
+        
+        return result || null;
+    };
+
+    async function collectAncestorData(personData, data, ancestorList = []) {
+        if (!personData) { return ancestorList; }
+        ancestorList.push(personData);
+        
+        const fNameOfCurrent = personData.fName;
+        const gfNameOfCurrent = personData.gfName;
+        const gmNameOfCurrent = personData.gmName;
+        const nextPersonData = findSpecificDocument(fNameOfCurrent, gfNameOfCurrent, gmNameOfCurrent, null, null, data);
+        
+        if (nextPersonData) {
+            await collectAncestorData(nextPersonData, data, ancestorList);
+        }
+        return ancestorList;
+    };
+    
+    window.findAndDisplayAncestors = async function (startData) {
+        const resultsDiv = document.getElementById("result");
+        resultsDiv.innerHTML = '';
+        if (!startData || !startData.name) {
+            resultsDiv.innerHTML += `<p>Please enter a name to start the search.</p>`; 
+            return;
+        }
+
+        try {
+            const allFamilyData = await window.fetchAllOnce();
+            const initialPersonData = findSpecificDocument(startData.name, startData.fName, startData.mName, startData.gfName, startData.gmName, allFamilyData );
+            
+            if (!initialPersonData) {
+                resultsDiv.innerHTML += `<p>No person matching the provided details was found.</p>`; 
+                return; 
+            }
+
+            const ancestorList = await collectAncestorData(initialPersonData, allFamilyData);
+            let outputHtml = '';
+            const displayedNames = new Set();
+
+            ancestorList.forEach((personData) => {
+                const name = personData.name;
+                const fName = personData.fName;
+                const mName = personData.mName;
+                const gfName = personData.gfName;
+                const gmName = personData.gmName;
+
+                if (name && !displayedNames.has(name)) {
+                    outputHtml += `<div class="px-1 py-1"><span>Name :</span> ${name}</div><div class="border-b border-gray-400"></div>`; 
+                    displayedNames.add(name);
+                }
+                if (fName && !displayedNames.has(fName)) {
+                    outputHtml += `<div class="px-1 py-1 text-yellow-600"><span>Father :</span> ${fName}</div>`; 
+                    displayedNames.add(fName);
+                }
+                if (mName && !displayedNames.has(mName)) {
+                    outputHtml += `<div class="px-1 py-1 text-green-500"><span>Mother :</span> ${mName}</div><div class="border-b border-gray-400"></div>`; 
+                    displayedNames.add(mName); }
+                if (gfName && !displayedNames.has(gfName)) {
+                    outputHtml += `<div class="px-1 py-1 text-yellow-600"><span>Grandfather :</span> ${gfName}</div>`; displayedNames.add(gfName);
+                }
+                if (gmName && !displayedNames.has(gmName)) {
+                    outputHtml += `<div class="px-1 py-1 text-green-500"><span>Grandmother :</span> ${gmName}</div><div class="border-b border-gray-400"></div>`; 
+                    displayedNames.add(gmName);
+                }
+            });
+            resultsDiv.innerHTML = `${outputHtml}`;
+        } catch (error) {console.error("Error finding ancestor chain:", error); 
+            resultsDiv.innerHTML += `<p>An error occurred. Please check the console.</p>`;
+        }
+    };
+
+    window.startSearch = function () {
+        const startData = { 
+            name: document.getElementById("name1").value.trim(),
+            fName: document.getElementById("fName1").value.trim(), 
+            mName: document.getElementById("mName1").value.trim(), 
+            gfName: document.getElementById("gfName1").value.trim(), 
+            gmName: document.getElementById("gmName1").value.trim(),
+        };
+
+        window.findAndDisplayAncestors(startData);
+    };
+    
+    window.viewAllData = async function (showDelete = true, showUpdate = true, editable = false, type) {
+        const allData = await window.fetchAllOnce();
+        const rows = [];
+        
+        allData.forEach((data) => {
+            const dob = (data.dob || "").trim();
+
+            if (data && (data.name?.trim() || data.fName?.trim() || data.mName?.trim())) {
+                rows.push({
+                    id: data.id,
+                    nokh: data.nokh,
+                    name: data.name,
+                    fName: data.fName,
+                    mName: data.mName,
+                    gfName: data.gfName,
+                    gmName: data.gmName,
+                    dob: data.dob || "",
+                    mStatus: data.mStatus,
+                    njmf: data.njmf,
+                    mob: data.mob,
+                    place: data.place,
+                    group: data.group,
+                    displayDob: dob ? dob.split('-').reverse().join('-').replace(/(\d{2})-(\d{4})$/, '$1-$2') : "N/A",
+                });
+            }
+        });
+
+        const allColumns = [
+            {title: "Parivar", field: "nokh"}, 
+            {title: "Name", field: "name"}, 
+            {title: "Father", field: "fName"}, 
+            {title: "Mother", field: "mName"}, 
+            {title: "GrFather", field: "gfName"}, 
+            {title: "GrMother", field: "gmName"}, 
+            {title: "DOB", field: "displayDob"}, 
+            {title: "MStatus", field: "mStatus"}, 
+            {title: "N/J/M/F", field: "njmf"}, 
+            {title: "Mob No", field: "mob"},
+            {title: "Place", field: "place"},
+            {title: "Group", field: "group"}, 
+        ];
+
+        if (type) {
+            const selectedFields = Array.from(document.querySelectorAll('#selCont input:checked')).map(cb => cb.value);
+            const columns = selectedFields.length > 0 
+                ? allColumns.filter(col => selectedFields.includes(col.field))
+                : allColumns;
+            createEditableTable(rows, columns, showDelete, showUpdate, editable);
+
+        } else {createEditableTable(rows, allColumns, showDelete, showUpdate, editable);}
+    };
+
+    window.sankhya = async function () {
+        const allData = await window.fetchAllOnce();
+        const container = document.getElementById("sanCont");
+        container.innerHTML = "";
+
+        const groupCounts = {};
+        const totalCounts = { 
+            Male: 0, 
+            Female: 0, 
+            UnmarriedNiyani: 0, 
+            MarriedNiyani: 0, 
+            GaSwaNiyani: 0, 
+            Jamai: 0 
+        };
+
+        allData.forEach((data) => {
+            if (!data || !data.nokh) return;
+            const group = data.nokh;
+            const njmf = data.njmf?.trim();
+            const mStatus = data.mStatus?.trim();
+
+            if (mStatus === "Swargiya") return;
+
+            if (!groupCounts[group]) {
+                groupCounts[group] = { 
+                    Male: 0, 
+                    Female: 0, 
+                    UnmarriedNiyani: 0,
+                    MarriedNiyani: 0,  
+                    GaSwaNiyani: 0, 
+                    Jamai: 0, 
+                };
+            }
+
+            if (njmf === "Male") {
+                groupCounts[group].Male++;
+                totalCounts.Male++;
+            } else if (njmf === "Female") {
+                groupCounts[group].Female++;
+                totalCounts.Female++;
+            } else if (njmf === "Niyani") {
+                if (mStatus === "Married") {
+                    groupCounts[group].MarriedNiyani++;
+                    totalCounts.MarriedNiyani++;
+                } else if (mStatus === "Unmarried") {
+                    groupCounts[group].UnmarriedNiyani++;
+                    totalCounts.UnmarriedNiyani++;
+                } else if (mStatus === "gaSwa") {
+                    groupCounts[group].GaSwaNiyani++;
+                    totalCounts.GaSwaNiyani++;
+                }
+            } else if (njmf === "Jamai") {
+                groupCounts[group].Jamai++;
+                totalCounts.Jamai++;
+            }
+        });
+
+        const totalNiyaniAll = totalCounts.MarriedNiyani + totalCounts.UnmarriedNiyani + totalCounts.GaSwaNiyani;
+        const grandTotalAll = totalCounts.Male + totalCounts.Female + totalNiyaniAll + totalCounts.Jamai;
+
+        const summaryCard = document.createElement("div");
+        summaryCard.style.border = "2px solid #444";
+        summaryCard.style.padding = "15px";
+        summaryCard.style.borderRadius = "10px";
+        summaryCard.style.background = "#f3f4f6";
+        summaryCard.style.boxShadow = "3px 3px 10px rgba(0,0,0,0.2)";
+        summaryCard.style.lineHeight = "1.4";
+
+        summaryCard.innerHTML = `
+            <div><h3 class="text-lg font-bold mb-2 py-2 text-center text-white bg-gradient-to-r from-blue-700 to-green-700 rounded-t-lg shadow">🌟 Total of All Parivars 🌟</h3></div>
+            <div style="color: blue;">Unmarried Niyani: ${totalCounts.UnmarriedNiyani}</div>
+            <div style="color: blue;">Married Niyani: ${totalCounts.MarriedNiyani}</div>
+            <div style="color: blue;">GaSwa Niyani: ${totalCounts.GaSwaNiyani}</div>
+            <div style="color: red;">Total Niyani: ${totalNiyaniAll}</div>
+            <div style="color: red;">Total Jamai: ${totalCounts.Jamai}</div>
+            <div style="color: #064996;">Total Male: ${totalCounts.Male}</div>
+            <div style="color: #064996;">Total Female: ${totalCounts.Female}</div>
+            <div class="text-black">Grand Total: ${grandTotalAll}</div>
+        `;
+        container.appendChild(summaryCard);
+
+        for (const [nokh, counts] of Object.entries(groupCounts)) {
+            const totalNiyani = counts.MarriedNiyani + counts.UnmarriedNiyani + counts.GaSwaNiyani;
+            const grandTotal = counts.Male + counts.Female + totalNiyani + counts.Jamai;
+
+            const card = document.createElement("div");
+            card.style.border = "2px solid #444";
+            card.style.padding = "15px";
+            card.style.borderRadius = "10px";
+            card.style.background = "#f3f4f6";
+            card.style.boxShadow = "3px 3px 10px rgba(0,0,0,0.2)";
+            card.style.lineHeight = "1.4";
+
+            card.innerHTML = `
+                <div><h3 class="text-lg font-bold mb-2 py-2 text-center text-white bg-gradient-to-r from-blue-700 to-green-700 rounded-t-lg shadow">🌟 ${nokh} Parivar 🌟</h3></div>
+                <div style="color: blue;">Unmarried Niyani: ${counts.UnmarriedNiyani}</div>
+                <div style="color: blue;">Married Niyani: ${counts.MarriedNiyani}</div>
+                <div style="color: blue;">GaSwa Niyani: ${counts.GaSwaNiyani}</div>
+                <div style="color: red;">Total Niyani: ${totalNiyani}</div>
+                <div style="color: red;">Total Jamai: ${counts.Jamai}</div>
+                <div style="color: #064996;">Total Male: ${counts.Male}</div>
+                <div style="color: #064996;">Total Female: ${counts.Female}</div>
+                <div class="text-black">Grand Total: ${grandTotal}</div>
+            `;
+            container.appendChild(card);
+        }
+        showCont(1,'sanCont',);
+    };
+
+    window.sankhyaKalariya = async function () {
+        const allData = await window.fetchAllOnce();
+        const container = document.getElementById("sanCont");
+        container.innerHTML = "";
+
+        const groupCounts = {};
+        const totalCounts = { 
+            Gotri: 0, 
+            PV: 0, 
+            UnmarriedNiyani: 0, 
+            MarriedNiyani: 0, 
+            GaSwaNiyani: 0, 
+            Jamai: 0 
+        };
+
+        allData.forEach((data) => {
+            if (!data || !data.group) return;
+            const group = data.group;
+            const njgp = data.njgp?.trim();
+            const mStatus = data.mStatus?.trim();
+
+            if (mStatus === "Swargiya") return;
+
+            if (!groupCounts[group]) {
+                groupCounts[group] = { 
+                    Gotri: 0, 
+                    PV: 0, 
+                    UnmarriedNiyani: 0,
+                    MarriedNiyani: 0,  
+                    GaSwaNiyani: 0, 
+                    Jamai: 0, 
+                };
+            }
+
+            if (njgp === "Gotri") {
+                groupCounts[group].Gotri++;
+                totalCounts.Gotri++;
+            } else if (njgp === "Putravadhu") {
+                groupCounts[group].PV++;
+                totalCounts.PV++;
+            } else if (njgp === "Niyani") {
+                if (mStatus === "Married") {
+                    groupCounts[group].MarriedNiyani++;
+                    totalCounts.MarriedNiyani++;
+                } else if (mStatus === "Unmarried") {
+                    groupCounts[group].UnmarriedNiyani++;
+                    totalCounts.UnmarriedNiyani++;
+                } else if (mStatus === "gaSwa") {
+                    groupCounts[group].GaSwaNiyani++;
+                    totalCounts.GaSwaNiyani++;
+                }
+            } else if (njgp === "Jamai") {
+                groupCounts[group].Jamai++;
+                totalCounts.Jamai++;
+            }
+        });
+
+        const totalNiyaniAll = totalCounts.MarriedNiyani + totalCounts.UnmarriedNiyani + totalCounts.GaSwaNiyani;
+        const grandTotalAll = totalCounts.Gotri + totalCounts.PV + totalNiyaniAll + totalCounts.Jamai;
+
+        const summaryCard = document.createElement("div");
+        summaryCard.style.border = "2px solid #444";
+        summaryCard.style.padding = "15px";
+        summaryCard.style.borderRadius = "10px";
+        summaryCard.style.background = "#f3f4f6";
+        summaryCard.style.boxShadow = "3px 3px 10px rgba(0,0,0,0.2)";
+        summaryCard.style.lineHeight = "1.4";
+
+        summaryCard.innerHTML = `
+            <div><h3 class="text-lg font-bold mb-2 py-2 text-center text-white bg-gradient-to-r from-blue-700 to-green-700 rounded-t-lg shadow">🌟 Total of All Parivars 🌟</h3></div>
+            <div style="color: blue;">Unmarried Niyani: ${totalCounts.UnmarriedNiyani}</div>
+            <div style="color: blue;">Married Niyani: ${totalCounts.MarriedNiyani}</div>
+            <div style="color: blue;">GaSwa Niyani: ${totalCounts.GaSwaNiyani}</div>
+            <div style="color: red;">Total Niyani: ${totalNiyaniAll}</div>
+            <div style="color: red;">Total Jamai: ${totalCounts.Jamai}</div>
+            <div style="color: #064996;">Total Gotri: ${totalCounts.Gotri}</div>
+            <div style="color: #064996;">Total Putravadhu: ${totalCounts.PV}</div>
+            <div class="text-black">Grand Total: ${grandTotalAll}</div>
+        `;
+        container.appendChild(summaryCard);
+
+        for (const [group, counts] of Object.entries(groupCounts)) {
+            const totalNiyani = counts.MarriedNiyani + counts.UnmarriedNiyani + counts.GaSwaNiyani;
+            const grandTotal = counts.Gotri + counts.PV + totalNiyani + counts.Jamai;
+
+            const card = document.createElement("div");
+            card.style.border = "2px solid #444";
+            card.style.padding = "15px";
+            card.style.borderRadius = "10px";
+            card.style.background = "#f3f4f6";
+            card.style.boxShadow = "3px 3px 10px rgba(0,0,0,0.2)";
+            card.style.lineHeight = "1.4";
+
+            card.innerHTML = `
+                <div><h3 class="text-lg font-bold mb-2 py-2 text-center text-white bg-gradient-to-r from-blue-700 to-green-700 rounded-t-lg shadow">🌟 ${group} Parivar 🌟</h3></div>
+                <div style="color: blue;">Unmarried Niyani: ${counts.UnmarriedNiyani}</div>
+                <div style="color: blue;">Married Niyani: ${counts.MarriedNiyani}</div>
+                <div style="color: blue;">GaSwa Niyani: ${counts.GaSwaNiyani}</div>
+                <div style="color: red;">Total Niyani: ${totalNiyani}</div>
+                <div style="color: red;">Total Jamai: ${counts.Jamai}</div>
+                <div style="color: #064996;">Total Gotri: ${counts.Gotri}</div>
+                <div style="color: #064996;">Total Putravadhu: ${counts.PV}</div>
+                <div class="text-black">Grand Total: ${grandTotal}</div>
+            `;
+            container.appendChild(card);
+        }
+        showCont(1,'sanCont');
+    };
+
+    window.topStats = async function (type = "names") {
+        const allData = await window.fetchAllOnce();
+        const freqMap = {};
+
+        if (type === "names") {
+            allData.forEach(item => {
+                ['name','fName','mName','gfName','gmName'].forEach(field => {
+                    const value = item[field]?.trim();
+                    if (value) freqMap[value] = (freqMap[value] || 0) + 1;
+                });
+            });
+        } else if (type === "places") {
+            allData.forEach(item => {
+                const name = item.name?.trim();
+                const place = item.place?.trim();
+                if (name && place) {
+                    freqMap[place] = (freqMap[place] || 0) + 1;
+                }
+            });
+        }
+
+        const sortedData = Object.entries(freqMap)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+
+        const container = document.getElementById('sanCont');
+        container.innerHTML = '';
+        const header = document.createElement('h3');
+        header.className ='text-lg font-bold mb-2 text-center text-white p-2 rounded-t-lg shadow';
+
+        if (type === "names") {
+            header.classList.add("bg-gradient-to-r", "from-pink-700", "to-red-400");
+            header.textContent = '🌟 Top Names Used In Vigodi 🌟';
+        } else {
+            header.classList.add("bg-gradient-to-r", "from-green-700", "to-blue-400");
+            header.textContent = '🏠 Top Places With Most People 🏠';
+        }
+
+        container.appendChild(header);
+
+        sortedData.forEach(([value, count]) => {
+            const label = document.createElement('label');
+            label.className =
+                'block px-2 py-2 mt-1 shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)] rounded-b-lg';
+            label.textContent = `${value} : ${count}`;
+            container.appendChild(label);
+        });
+        showCont(1, 'sanCont');
+    };
+
+    window.changeTheme = function () {
+        const html = document.documentElement;
+        html.classList.toggle('dark');
+        if (html.classList.contains('dark')) {localStorage.theme = 'dark';} 
+        else {localStorage.theme = 'light';}
+    };
+
+    window.logout = async function () { 
+        showCont();
+        if (confirm("Are you sure you want to logout?")) { 
+            await signOut(auth); showCont("lgnCont"); 
+        } 
+    };
+
+    window.login = async function () {
+        const email = document.getElementById("loginEmail").value;
+        const password = document.getElementById("loginPassword").value;
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists() && docSnap.data().approved === true) { 
+            showCont("menuCont"); 
+        }
+    };
+   
+    //window.addEventListener("beforeunload", function (e) { e.preventDefault(); e.returnValue = ""; });
+
+</script>
+</body>
+</html>
