@@ -24,12 +24,12 @@
     <button class="btnM" onclick="sankhya()">👀 Sankhya</button>
     <button class="btnM" onclick="sankhyaKalariya()">👀 Kalariya Sankhya</button>
     <button class="btnM" onclick="topStats('names')">🏅 Most Used Names</button>
-    <button class="btnM" onclick="topStats('places')">🏅 City With Heighest People</button>
+    <button class="btnM" onclick="topStats('places')">🏆 City With Heighest People</button>
     <button class="btnM" onclick="changeTheme()">🌈 Themes</button>
     <button class="btnM" onclick="logout()">🔐 Logout</button>
 </div>
 
-<div id ="eleCont" class="cont"> <!--inputs to add names-->
+<div id ="eleCont" class="hidden cont"> <!--inputs to add names-->
     <input id="nokh" class="input-box" type="text"/><label for="nokh" class="label">Nokh</label>
     <input id="name" class="input-box" type="text"/><label for="name" class="label">Name</label>
     <input id="fName" class="input-box" type="text"/><label for="fName" class="label">Father</label>
@@ -38,40 +38,43 @@
     <input id="gmName" class="input-box" type="text"/><label for="gmName" class="label">GrMother</label>
     <input id="mStatus" class="input-box" type="text"/><label for="mStatus" class="label">Married ??</label>
     <input id="njmf" class="input-box" type="text"/><label for="njmf" class="label">Niyani/Jamai/Male/Female</label>
-    <input id="dob" class="input-box" type="date"/><label for="dob" class="label">Date Of Birth(optional)</label>
-    <input id="mob" class="input-box" type="number"/><label for="mob" class="label">Mob(optional)</label>
+    <input id="group" class="input-box" type="text"/><label for="group" class="label text-[16px]">Group(A,B,D,V)[Only for Kalariyas & Kalariya Niyana's]</label>
     <input id="place" class="input-box" type="text"/><label for="place" class="label">Place(optional)</label>
-    <input id="group" class="input-box" type="text"/><label for="group" class="label">Group(A,B..)[Only for Kalariyas]</label>
-    <button class="btnBK mt-10 mb-5" onclick="showCont('menuCont')">🏠︎</button><button class="bg-green-500 text-white px-5 py-3 rounded-lg shadow-[0_8px_15px_rgba(0,0,0,0.4)] mt-10 mb-5 ml-[200px] duration-300 hover:translate-x-5" onclick="saveTransaction()">💾 Save</button>
+    <input id="mob" class="input-box" type="number"/><label for="mob" class="label">Mob(optional)</label>
+    <input id="dob" class="input-box" type="date"/><label for="dob" class="label">Date Of Birth(optional)</label>
+    <div class="flex justify-between items-center mt-10 mb-5"><button class="btnBK" onclick="showCont('menuCont')">🏠︎</button>
+    <button class="bg-green-500 text-white px-5 py-2 rounded-lg shadow-[0_8px_15px_rgba(0,0,0,0.4)] duration-300 hover:translate-x-5" onclick="saveTransaction()">💾 Save</button></div>
 </div>
 
-<div id="ancCont" class="cont"> <!--inputs to select ancestors-->
+
+<div id="ancCont" class="hidden cont"> <!--inputs to select ancestors-->
     <input id="name1" class="input-box" type="text"/><label for="name1" class="label">Name</label>
     <input id="fName1" class="input-box" type="text"/><label for="fName1" class="label">Father</label>
     <input id="mName1" class="input-box" type="text"/><label for="mName1" class="label">Mother</label>
     <input id="gfName1" class="input-box" type="text"/><label for="gfName1"class="label">GrFather</label>
     <input id="gmName1" class="input-box" type="text"/><label for="gmName1"class="label">GrMother</label>
-    <div class="d1"><button class="btnSV" onclick="startSearch()">🔍</button><span class="ml-1 mr-1">Find..............Home</span><button class="btnBK" onclick="showCont('menuCont')">🏠︎</button></div>
+    <div class="d1"><button class="btnSV" onclick="startSearch()">🔍</button><span class="ml-1 mr-1">Find...............Home</span><button class="btnBK" onclick="showCont('menuCont')">🏠︎</button></div>
     <div id="result" class="max-w-md p-2 rounded-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"></div> <!--to show ancestors-->
 </div>
 
-<div id="1" class="hidden"><button class="btnBK" onclick="showCont('menuCont')">🏠︎</button></div><div id="sanCont" class="cont"></div> <!--to show sankhya niyani,male,female....-->
+<div id="1" class="hidden"><button class="btnBK" onclick="showCont('menuCont')">🏠︎</button></div> <!-- Home Button -->
+<div id="sanCont" class="hidden cont"></div> <!--to show sankhya niyani,male,female....-->
 
-<div id="selCont" class="cont"> <!--to view selected columns in table-->
+<div id="selCont" class="hidden cont"> <!--to view selected columns in table-->
     <h2 class="p-3  rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]">Select Columns</h2>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="nokh">Nokh</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="name" checked>Name</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="fName" checked>Father</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="mName" checked>Mother</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="gfName" checked>GrFather</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="gmName" checked>GrMother</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="mStatus">MStatus</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="njmf">Go/Ni/M/F</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="displayDob">DOB</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="mob">Mob No</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="place">Place</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="group">Group</label></div>
-    <div class="d1"><button class="btnSV" onclick="viewAllData(false,false,false,'x')">👀</button><span class="ml-1 mr-1">ViewTable....Home</span><button class="btnBK" onclick="showCont('menuCont')">🏠︎</button></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="nokh"> Nokh</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="name" checked> Name</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="fName" checked> Father</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="mName" checked> Mother</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="gfName" checked> GrFather</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="gmName" checked> GrMother</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="mStatus"> MStatus</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="njmf"> Go/Ni/M/F</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="displayDob"> DOB</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="mob"> Mob No</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="place"> Place</label></div>
+    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="group"> Group</label></div>
+    <div class="d1"><button class="btnSV" onclick="viewAllData(false,false,false,'x')">👀</button><span class="ml-1 mr-1">ViewTable.....Home</span><button class="btnBK" onclick="showCont('menuCont')">🏠︎</button></div>
 </div>
 
 <div id="tblCont" class="hidden w-full p-2 rounded-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"> <!--table contener with search,excel,pdf,.....buttons-->
@@ -85,7 +88,7 @@
     <div id="table" class="w-full rounded-lg border border-green-600 mx-auto text-[18px] font-[Roboto]"></div>
 </div>
 
-<div id="lgnCont" class="cont"> <!--login contener-->
+<div id="lgnCont" class="hidden cont"> <!--login contener-->
     <h2 class="py-3 text-xl">Enter Login Details</h2>
     <input class="input-box" id="loginEmail" type="email" /><label class="label">Email</label>
     <input class="input-box" id="loginPassword" type="password" /><label class="label">Password</label>
@@ -118,27 +121,44 @@
     let cachedData = [], currentDocId = null;
     
     onAuthStateChanged(auth, async (user) => {
-        if (user) { 
+        if (user) {
+            window.isAdmin = user.email === "goboards77@gmail.com";
             window.tranCol = collection(db, (await getDoc(doc(db, "users", user.uid))).data().db);
+            
             await fetchAllOnce(); 
             await loadDropdownData(); 
             showCont('menuCont');
+
         } else (showCont('lgnCont'))
-    });  
-    
+    });
+
     function applyClasses(selector, classes) { document.querySelectorAll(selector).forEach(el => { el.classList.add(...classes.split(" ")); }); }
-    applyClasses(".cont", "hidden max-w-md p-2 rounded-lg dark:bg-[#2b3544] shadow-[0_8px_15px_rgba(0,0,0,0.4)]");
+    applyClasses(".cont", "max-w-md p-2 mb-[200px] rounded-lg dark:bg-[#2b3544] shadow-[0_8px_15px_rgba(0,0,0,0.4)]");
     applyClasses(".btnM", "block w-full px-5 py-4 text-left shadow-[0_8px_15px_rgba(0,0,0,0.4)] rounded-b-lg duration-500 hover:scale-110");
-    applyClasses(".btnBK", "h-[50px] w-[50px] rounded-full text-[20px] bg-[radial-gradient(circle_at_25%_20%,#6dd5fa,#003366)] shadow-[0_8px_15px_rgba(0,0,0,0.4)] duration-500 hover:scale-125");
+    applyClasses(".btnBK", "h-[45px] w-[45px] rounded-full text-[20px] bg-[radial-gradient(circle_at_25%_20%,#6dd5fa,#003366)] shadow-[0_8px_15px_rgba(0,0,0,0.4)] duration-500 hover:scale-125");
     applyClasses(".btnSV", "h-[50px] w-[50px] rounded-full text-[20px] bg-[radial-gradient(circle_at_25%_20%,#e3524f,#5374b8)] shadow-[0_8px_15px_rgba(0,0,0,0.4)] duration-500 hover:scale-125");
     applyClasses(".d1", "mt-5 w-[250px] rounded-[50px] text-white bg-gradient-to-r from-pink-800 to-blue-600");
-   
-    document.addEventListener('DOMContentLoaded', () => {
-        const wrapperClass = "relative mt-5";
-        const inputClass = "peer w-full px-1 border-b-2 border-gray-500 bg-transparent pt-2 focus:outline-none focus:border-yellow-600";
-        const labelClass = "absolute top-2 left-0 text-gray-500 dark:text-gray-400 transform -translate-y-6 peer-focus:-translate-y-6 peer-placeholder-shown:translate-y-0 scale-[.8] peer-placeholder-shown:scale-[1]";
 
-        document.querySelectorAll('.input-box').forEach(input => {
+    document.addEventListener("DOMContentLoaded", () => {
+        function setupShortcuts(inputId, shortcuts) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            input.addEventListener("keydown", (e) => { const key = e.key.toLowerCase(); if (shortcuts[key]) {e.preventDefault(); input.value = shortcuts[key]; } });
+        }
+
+        setupShortcuts("mStatus", { "m": "Married", "u": "Unmarried", "g": "gaSwa", "v": "Vidhur", "s": "Swargiya",});
+        setupShortcuts("njmf", { "n": "Niyani", "j": "Jamai", "m": "Male", "f": "Female" });
+        setupShortcuts("group", { "d": "Delivala", "a": "PatelA", "b": "PatelB", "v": "Visrambapa",});
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const wrapperClass = "relative mt-4";
+        const inputClass = "peer w-full px-1 pt-2 border-b-2 border-gray-500 bg-transparent focus:outline-none focus:border-yellow-600";
+        const labelClass = "absolute top-2 left-0 text-gray-500 dark:text-gray-400 transform -translate-y-5 scale-[.8] peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-[1] peer-focus:-translate-y-5 peer-focus:scale-[.8]";
+
+        const inputs = document.querySelectorAll('.input-box');
+
+        inputs.forEach((input, index) => {
             const label = input.nextElementSibling;
             if (!label || label.tagName !== "LABEL") return;
 
@@ -153,17 +173,29 @@
             input.setAttribute("placeholder", " ");
             input.setAttribute("autocomplete", "off");
 
+            // Auto capitalization
             if (input.type === "text") {
                 input.addEventListener('input', function () {
                     const start = this.selectionStart;
                     const end = this.selectionEnd;
                     this.value = this.value.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
-                    this.setSelectionRange(start, end); 
-                }); 
+                    this.setSelectionRange(start, end);
+                });
             }
+
+            // Enter → Next input
+            input.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault(); // stop form submit
+                    const nextInput = inputs[index + 1];
+                    if (nextInput) {
+                        nextInput.focus();
+                    }
+                }
+            });
         });
-    });   
-    
+    });
+
     window.fetchAllOnce = async function () { 
         if (cachedData.length > 0) { return cachedData;}  
         const snapshot = await getDocs(tranCol);
@@ -209,9 +241,9 @@
 
         attachDropdown(document.getElementById("nokh"), nokh_list);
         ["name","fName","mName","gfName","gmName","name1","fName1","mName1","gfName1","gmName1"].forEach(id => attachDropdown(document.getElementById(id), mname_list));
-        attachDropdown(document.getElementById("mStatus"), ["Married","Unmarried","Vidhur","gaSwa","Swargiya"]);
-        attachDropdown(document.getElementById("njmf"), ["Niyani","Jamai","Male","Female"]);
-        attachDropdown(document.getElementById("group"), ["Delivala","PatelA","PatelB","Visrambapa"]);
+        //attachDropdown(document.getElementById("mStatus"), ["Married","Unmarried","Vidhur","gaSwa","Swargiya"]);
+        //attachDropdown(document.getElementById("njmf"), ["Niyani","Jamai","Male","Female"]);
+        //attachDropdown(document.getElementById("group"), ["Delivala","PatelA","PatelB","Visrambapa"]);
         attachDropdown(document.getElementById("place"), place_list);
     }; 
     
@@ -219,6 +251,7 @@
         if (inputElement._dropdownCleanup) { inputElement._dropdownCleanup(); }
         let wrapper = inputElement.parentElement;
         let currentList = [];
+        let highlightedIndex = -1;
 
         if (!wrapper.classList.contains("relative")) {
             wrapper = document.createElement("div");
@@ -228,15 +261,14 @@
         }
 
         let dropdown = document.createElement("ul");
-        dropdown.className = "absolute z-50 w-full h-[500px] overflow-y-auto hidden rounded-b text-black bg-gray-100 dark:bg-gray-700 dark:text-white";
+        dropdown.className = "absolute z-50 w-full h-[500px] overflow-y-auto hidden rounded-b text-black bg-gray-100 dark:bg-gray-900 dark:text-white";
         wrapper.appendChild(dropdown);
 
         function filterList() {
             const search = inputElement.value.toLowerCase();
-            currentList = dataList.filter(item =>
-                item.toLowerCase().includes(search)
-            );
+            currentList = dataList.filter(item => item.toLowerCase().includes(search) );
 
+            highlightedIndex = -1;
             if (currentList.length > 0) {
                 populateDropdown(currentList);
                 dropdown.classList.remove("hidden");
@@ -249,31 +281,72 @@
                 const li = document.createElement("li");
                 li.textContent = item;
                 li.dataset.index = index;
-                li.className = "block w-full max-w-md px-2 py-3 text-left cursor-pointer hover:bg-blue-600 hover:text-white border-b border-gray-400 last:border-b-0";
-                li.addEventListener("mousedown", () => {
-                    inputElement.value = item;
-                    dropdown.classList.add("hidden");
-                });
+                li.className = "block w-full max-w-md px-2 py-2 text-left cursor-pointer hover:bg-blue-700 hover:text-white border-b border-gray-400 last:border-b-0";
+                li.addEventListener("mousedown", () => { inputElement.value = item; dropdown.classList.add("hidden"); });
                 dropdown.appendChild(li);
             });
         }
-        
-        const onInput = () => {filterList();};
-        const onClick = () => {filterList();};
-        const onDocClick = (e) => {if (!wrapper.contains(e.target)) dropdown.classList.add("hidden");};
+
+        function highlightItem(index) {
+            const items = dropdown.querySelectorAll("li");
+            items.forEach((li, i) => {
+                if (i === index) {li.classList.add("bg-blue-700", "text-white"); } 
+                else { li.classList.remove("bg-blue-700", "text-white"); }
+            });
+        }
+
+        const onInput = () => { filterList(); };
+        const onClick = () => { filterList(); };
+        const onDocClick = (e) => { if (!wrapper.contains(e.target)) dropdown.classList.add("hidden"); };
+
+        const onKeyDown = (e) => {
+            if (dropdown.classList.contains("hidden")) return;
+
+            const items = dropdown.querySelectorAll("li");
+            if (items.length === 0) return;
+
+            switch (e.key) {
+                case "ArrowDown":
+                    e.preventDefault();
+                    highlightedIndex = (highlightedIndex + 1) % items.length;
+                    highlightItem(highlightedIndex);
+                    break;
+
+                case "ArrowUp":
+                    e.preventDefault();
+                    highlightedIndex = (highlightedIndex - 1 + items.length) % items.length;
+                    highlightItem(highlightedIndex);
+                    break;
+
+                case "Enter":
+                    e.preventDefault();
+                    if (highlightedIndex >= 0 && highlightedIndex < items.length) {
+                        inputElement.value = items[highlightedIndex].textContent;
+                        dropdown.classList.add("hidden");
+                    }
+                    break;
+
+                case "Escape":
+                    dropdown.classList.add("hidden");
+                    break;
+            }
+        };
 
         inputElement.addEventListener("input", onInput);
         inputElement.addEventListener("click", onClick);
+        inputElement.addEventListener("keydown", onKeyDown);
         document.addEventListener("click", onDocClick);
 
         inputElement._dropdownCleanup = () => {
             inputElement.removeEventListener("input", onInput);
             inputElement.removeEventListener("click", onClick);
+            inputElement.removeEventListener("keydown", onKeyDown);
+            document.removeEventListener("click", onDocClick);
             if (dropdown.parentNode) dropdown.parentNode.removeChild(dropdown);
             inputElement._dropdownCleanup = null;
         };
     };
-
+    
     window.createEditableTable = function (rows, columns, showDelete = true, showUpdate = true, editable = false) {
         if (window.table && typeof window.table.destroy === "function") window.table.destroy();
         const isMobile = window.innerWidth < 768;  
@@ -285,7 +358,7 @@
         });
 
         if (!isMobile) {
-            if (showDelete) {
+            if (isAdmin && showDelete) {
                 fullColumns.push({
                     title: "",
                     field: "__delete",
@@ -305,7 +378,7 @@
                 });
             }
 
-            if (showUpdate) {
+            if (isAdmin && showUpdate) {
                 fullColumns.push({
                     title: "",
                     field: "__update",
@@ -346,7 +419,7 @@
                     }
                 });
 
-                if (showDelete || showUpdate) {
+                if (isAdmin && (showDelete || showUpdate)) {
                     inner += `<div class="col-span-2 pb-2 pr-5 flex justify-end gap-20 rounded-lg">`;
                     if (showDelete) inner += `<span class="delete-btn cursor-pointer">⛔</span>`;
                     if (showUpdate) inner += `<span class="update-btn cursor-pointer">✏️</span>`;
@@ -357,7 +430,7 @@
                 row.getElement().innerHTML = "";
                 row.getElement().appendChild(card);
 
-                if (showDelete) {
+                if (isAdmin && showDelete) {
                     card.querySelector(".delete-btn")?.addEventListener("click", async (e) => {
                         e.stopPropagation();
                         const confirmed = confirm("Delete? Are You Sure?");
@@ -369,7 +442,7 @@
                     });
                 }
 
-                if (showUpdate) {
+                if (isAdmin && showUpdate) {
                     card.querySelector(".update-btn")?.addEventListener("click", (e) => {
                         e.stopPropagation();
                         currentDocId = d.id;
@@ -382,7 +455,8 @@
         document.getElementById('exlbtn')?.addEventListener("click", () => { window.table.download("xlsx", "data.xlsx", { sheetName: "Sheet1" }); });
         document.getElementById('pdfBtn')?.addEventListener("click", () => { window.table.download("pdf", "data.pdf", { orientation: "portrait" }); });
         document.getElementById('prtBtn')?.addEventListener("click", () => { window.table.print(false, true); });
-        bindSearch(); showCont("tblCont");
+        bindSearch(); 
+        showCont("tblCont");
     };    
 
     window.bindSearch = function () {
@@ -422,7 +496,7 @@
         const group = document.getElementById("group").value.trim();
         
         if (!nokh || !name || !fName || !mName || !gfName || !gmName || !mStatus || !njmf ) { 
-            return alert("Please fill first 8 fields properly"); 
+            return alert("Please fill all required fields properly"); 
         }
 
         const tranData = {nokh, name, fName, mName, gfName, gmName, mStatus, njmf, };
@@ -456,6 +530,8 @@
         clear(); 
         currentDocId = null; 
         loadDropdownData();
+        document.activeElement.blur();
+        document.getElementById("nokh").focus();
     };
     
     function findSpecificDocument(name, fName, mName, gfName, gmName, data) {
@@ -602,7 +678,7 @@
                 : allColumns;
             createEditableTable(rows, columns, showDelete, showUpdate, editable);
 
-        } else {createEditableTable(rows, allColumns, showDelete, showUpdate, editable);}
+        } else {createEditableTable(rows, allColumns, showDelete, showUpdate, editable);} 
     };
 
     window.sankhya = async function () {
@@ -820,6 +896,7 @@
             `;
             container.appendChild(card);
         }
+        document.getElementById(1).className = "absolute top-[27px] left-[15px] z-50";
         showCont(1,'sanCont');
     };
 
@@ -855,10 +932,10 @@
 
         if (type === "names") {
             header.classList.add("bg-gradient-to-r", "from-pink-700", "to-red-400");
-            header.textContent = '🌟 Top Names Used In Vigodi 🌟';
+            header.textContent = '🎖️ Top Names Used In Vigodi 🏅';
         } else {
-            header.classList.add("bg-gradient-to-r", "from-green-700", "to-blue-400");
-            header.textContent = '🏠 Top Places With Most People 🏠';
+            header.classList.add("bg-green-800");
+            header.textContent = '🥇 Top Places With Most People 👨🏻‍👩🏻‍👦🏻‍👦🏻';
         }
 
         container.appendChild(header);
@@ -870,7 +947,8 @@
             label.textContent = `${value} : ${count}`;
             container.appendChild(label);
         });
-        showCont(1, 'sanCont');
+        document.getElementById(1).className = "absolute top-[12px] left-[3px] z-50";
+        showCont('sanCont',1);
     };
 
     window.changeTheme = function () {
@@ -900,8 +978,8 @@
         }
     };
    
-    //window.addEventListener("beforeunload", function (e) { e.preventDefault(); e.returnValue = ""; });
-
+    window.addEventListener("beforeunload", function (e) { e.preventDefault(); e.returnValue = ""; });
+    
 </script>
 </body>
 </html>
