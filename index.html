@@ -1,110 +1,71 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Vigodi</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     <script src="https://unpkg.com/tabulator-tables@5.5.0/dist/js/tabulator.min.js"></script>    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
-    <script> tailwind.config = {darkMode:'class', theme:{extend: {},}}</script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/tabulator-tables@5.5.0/dist/css/tabulator.min.css" rel="stylesheet">
 </head>
-
-<body class="p-1 bg-white text-black dark:bg-gray-800 dark:text-white" style="font-family: 'Roboto'; font-size: 18px;">
-
-<div id="menuCont"class="cont"> <!--menu contener-->
-    <h2 class="ml-5 text-2xl mb-2 text-blue-600 dark:text-green-500">🤝 Welcome to Vigodi</h2>
-    <button class="btnM" onclick="showCont('eleCont')">✍🏻 Add Name</button>
-    <button class="btnM" onclick="showCont('ancCont')">👨‍👩‍👦‍👦 Ancestors</button>
-    <button class="btnM" onclick="viewAllData(true,true,false)">👀 All Data</button>
-    <button class="btnM" onclick="showCont('selCont')">👁️ Selected Data</button>
-    <button class="btnM" onclick="sankhya()">👀 Sankhya</button>
-    <button class="btnM" onclick="sankhyaKalariya()">👀 Kalariya Sankhya</button>
-    <button class="btnM" onclick="topStats('names')">🏅 Most Used Names</button>
-    <button class="btnM" onclick="topStats('places')">🏆 City With Heighest People</button>
-    <button class="btnM" onclick="changeTheme()">🌈 Themes</button>
-    <button class="btnM" onclick="logout()">🔐 Logout</button>
-</div>
-
-<div id ="eleCont" class="hidden cont"> <!--inputs to add names-->
-    <input id="nokh" class="input-box" type="text"/><label for="nokh" class="label">Nokh</label>
-    <input id="name" class="input-box" type="text"/><label for="name" class="label">Name</label>
-    <input id="fName" class="input-box" type="text"/><label for="fName" class="label">Father</label>
-    <input id="mName" class="input-box" type="text"/><label for="mName" class="label">Mother</label>
-    <input id="gfName" class="input-box" type="text"/><label for="gfName" class="label">GrFather</label>
-    <input id="gmName" class="input-box" type="text"/><label for="gmName" class="label">GrMother</label>
-    <input id="mStatus" class="input-box" type="text"/><label for="mStatus" class="label">Married ??</label>
-    <input id="njmf" class="input-box" type="text"/><label for="njmf" class="label">Niyani/Jamai/Male/Female</label>
-    <input id="group" class="input-box" type="text"/><label for="group" class="label text-[16px]">Group(A,B,D,V)[Only for Kalariyas & Kalariya Niyana's]</label>
-    <input id="place" class="input-box" type="text"/><label for="place" class="label">Place(optional)</label>
-    <input id="mob" class="input-box" type="number"/><label for="mob" class="label">Mob(optional)</label>
-    <input id="dob" class="input-box" type="date"/><label for="dob" class="label">Date Of Birth(optional)</label>
-    <div class="flex justify-between items-center mt-10 mb-5"><button class="btnBK" onclick="showCont('menuCont')">🏠︎</button>
-    <button class="bg-green-500 text-white px-5 py-2 rounded-lg shadow-[0_8px_15px_rgba(0,0,0,0.4)] duration-300 hover:translate-x-5" onclick="saveTransaction()">💾 Save</button></div>
-</div>
-
-
-<div id="ancCont" class="hidden cont"> <!--inputs to select ancestors-->
-    <input id="name1" class="input-box" type="text"/><label for="name1" class="label">Name</label>
-    <input id="fName1" class="input-box" type="text"/><label for="fName1" class="label">Father</label>
-    <input id="mName1" class="input-box" type="text"/><label for="mName1" class="label">Mother</label>
-    <input id="gfName1" class="input-box" type="text"/><label for="gfName1"class="label">GrFather</label>
-    <input id="gmName1" class="input-box" type="text"/><label for="gmName1"class="label">GrMother</label>
-    <div class="d1"><button class="btnSV" onclick="startSearch()">🔍</button><span class="ml-1 mr-1">Find...............Home</span><button class="btnBK" onclick="showCont('menuCont')">🏠︎</button></div>
-    <div id="result" class="max-w-md p-2 rounded-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"></div> <!--to show ancestors-->
-</div>
-
-<div id="1" class="hidden"><button class="btnBK" onclick="showCont('menuCont')">🏠︎</button></div> <!-- Home Button -->
-<div id="sanCont" class="hidden cont"></div> <!--to show sankhya niyani,male,female....-->
-
-<div id="selCont" class="hidden cont"> <!--to view selected columns in table-->
-    <h2 class="p-3  rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]">Select Columns</h2>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="nokh"> Nokh</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="name" checked> Name</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="fName" checked> Father</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="mName" checked> Mother</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="gfName" checked> GrFather</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="gmName" checked> GrMother</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="mStatus"> MStatus</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="njmf"> Go/Ni/M/F</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="displayDob"> DOB</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="mob"> Mob No</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="place"> Place</label></div>
-    <div class="p-3 rounded-b-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"><label><input type="checkbox" value="group"> Group</label></div>
-    <div class="d1"><button class="btnSV" onclick="viewAllData(false,false,false,'x')">👀</button><span class="ml-1 mr-1">ViewTable.....Home</span><button class="btnBK" onclick="showCont('menuCont')">🏠︎</button></div>
-</div>
-
-<div id="tblCont" class="hidden w-full p-2 rounded-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)]"> <!--table contener with search,excel,pdf,.....buttons-->
-    <div><input id="searchBox" class="px-2 h-10 text-black border-b-2 border-green-500" placeholder="Search..." type="text"/></div>
-    <div class="w-fit flex gap-2 py-2 justify-start">
-        <button id="exlbtn" class="px-4 py-1 bg-green-500 text-white rounded-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)] duration-500 hover:scale-125">XL</button>
-        <button id="pdfBtn" class="px-3 py-1 bg-blue-500 text-white rounded-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)] duration-500 hover:scale-125">PDF</button>
-        <button id="prtBtn" class="px-4 py-1 bg-yellow-500 text-white rounded-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)] duration-500 hover:scale-125">🖨️</button>
-        <button class="px-5 py-1 bg-purple-500 text-white rounded-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)] duration-500 hover:scale-125" onclick="showCont('menuCont')">🏠︎</button>
+<body class="bg-gray-100 p-1" style="font-family: 'Roboto'; font-size: 18px;">
+    <div id="menuCont"class="hidden max-w-md p-2 mb-[100px] bg-white rounded-lg shadow-[0_8px_15px_rgba(0,0,0,0.4)]">
+        <h2 class="w-full text-center py-3 text-2xl mb-2 text-green-600 shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)] rounded-b-lg">🤝 Welcome to Vigodi 💐</h2>
+        <button class="btnM" onclick="showEle('formCont',11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,'bBtn','sBtn')">✍🏻 Add Name</button>
+        <button class="btnM" onclick="showEle('formCont',13,14,15,16,17,18,19,20,21,22,'bBtn','srBtn','sanCont')">👨‍👩‍👦‍👦 Ancestors</button>
+        <button class="btnM" onclick="viewAllData(true,true)">👀 All Data</button>
+        <button class="btnM" onclick="sankhya()">👀 Sankhya</button>
+        <button class="btnM" onclick="topStats()">🏅 Rankings</button>
+        <button class="btnM" onclick="logout()">🔐 Logout</button>
     </div>
-    <div id="table" class="w-full rounded-lg border border-green-600 mx-auto text-[18px] font-[Roboto]"></div>
-</div>
 
-<div id="lgnCont" class="hidden cont"> <!--login contener-->
-    <h2 class="py-3 text-xl">Enter Login Details</h2>
-    <input class="input-box" id="loginEmail" type="email" /><label class="label">Email</label>
-    <input class="input-box" id="loginPassword" type="password" /><label class="label">Password</label>
-    <button class="block mx-auto bg-green-500 text-white px-10 py-1 mt-10 rounded-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)] duration-500 hover:scale-125" onclick="login()">🏠︎ Login</button>
-</div>
+    <div id="formCont" class="hidden w-full max-w-md grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 p-2 items-center rounded-lg shadow-[0_8px_15px_rgba(0,0,0,0.4)]">
+        <button id="bBtn" class="btnM mb-5 text-center bg-lime-400 font-bold" onclick="showEle('menuCont')">🏠︎</button>
+        <button id="sBtn" class="btnM text-center mb-5 bg-green-400 font-bold">💾 Save New Name</button>
+        <button id="srBtn" class="btnM text-center mb-5 bg-blue-400 font-bold" onclick="startSearch()">🔍 Search</button>   
+
+        <label id="11" class="lbl">Nokh:</label><input id="12" class="inp">
+        <label id="13" class="lbl">Name:</label><input id="14" class="inp">
+        <label id="15" class="lbl">Father:</label><input id="16" class="inp">
+        <label id="17" class="lbl">Mother:</label><input id="18" class="inp">
+        <label id="19" class="lbl">GrFather:</label><input id="20" class="inp">
+        <label id="21" class="lbl">GrMother:</label><input id="22" class="inp">
+        <label id="23" class="lbl">Married:</label><input id="24" class="inp">
+        <label id="25" class="lbl">Njmf:</label><input id="26" class="inp">
+        <label id="27" class="lbl">Place:</label><input id="28" class="inp">
+        <label id="29" class="lbl mb-10">Mob no:</label><input id="30" class="inp mb-10"> 
+    </div>
+
+    <div id="sanCont" class="hidden max-w-md p-2 mb-[100px] bg-white rounded-lg shadow-[0_8px_15px_rgba(0,0,0,0.4)]"></div>
+
+    <div id="tblCont" class="hidden w-full p-2 mb-[100px] bg-white rounded-lg shadow-[0_8px_15px_rgba(0,0,0,0.4)]"> 
+        <div><input id="searchBox" class="w-full max-w-md px-2 h-10 rounded-lg shadow-[0_8px_15px_rgba(0,0,0,0.8)]" placeholder="Search..." type="text" autocomplete="off"/></div>
+        <div class="w-fit flex gap-2 pb-1 pt-2 justify-start">
+            <button class="px-5 py-1 bg-purple-500 text-white font-bold rounded-lg duration-500 hover:scale-125" onclick="clearInput(); showEle('menuCont')">🏠︎</button>
+            <button id="exlbtn" class="px-4 py-1 bg-green-500 font-bold text-white rounded-lg duration-500 hover:scale-125">XL</button>
+            <button id="pdfBtn" class="px-3 py-1 bg-blue-500 font-bold text-white rounded-lg duration-500 hover:scale-125">PDF</button>
+        </div>
+        <div id="table" class="w-full rounded-lg border border-green-600 mx-auto text-[18px] font-[Roboto]"></div>
+    </div>
+
+    <div id="lgnCont" class="hidden w-full max-w-md p-2 rounded-lg shadow-[0_8px_15px_rgba(0,0,0,0.4)]">
+        <h2 class="py-3 text-xl">Enter Login Details</h2>
+        <label class="block">Email</label><input class="w-full max-w-md py-2 border-b-2 border-green-500" id="loginEmail" type="email" />
+        <label class="block mt-3">Password</label><input class="w-full max-w-md py-2 border-b-2 border-green-500" id="loginPassword" type="password" />
+        <button class="block mx-auto bg-green-500 text-white px-10 py-3 mt-10 mb-5 rounded-lg shadow-[0_8px_15px_rgba(0,0,0,0.4)]" onclick="login()">🏠︎ Login</button>
+    </div>
 
 <script type="module">
     import {initializeApp} 
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    
     import {getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut,} 
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    
-    import {getFirestore, collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, query, where } 
+    import {getFirestore, collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, query, where, deleteField  } 
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    
     const firebaseConfig = {
         apiKey: "AIzaSyDFYd3RFA0oaJ2A74cLdIm_raus_QHivX8",
         authDomain: "vigodi-64ecd.firebaseapp.com",
@@ -114,12 +75,10 @@
         appId: "1:151383854150:web:ce0bb6c90844203e6f0e47",
         measurementId: "G-4VKY4HEYCG"
     };
-
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
     let cachedData = [], currentDocId = null;
-    
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             window.isAdmin = user.email === "goboards77@gmail.com";
@@ -127,226 +86,131 @@
             
             await fetchAllOnce(); 
             await loadDropdownData(); 
-            showCont('menuCont');
+            showEle('menuCont');
 
-        } else (showCont('lgnCont'))
+        } else (showEle('lgnCont'))
     });
 
-    function applyClasses(selector, classes) { document.querySelectorAll(selector).forEach(el => { el.classList.add(...classes.split(" ")); }); }
-    applyClasses(".cont", "max-w-md p-2 mb-[200px] rounded-lg dark:bg-[#2b3544] shadow-[0_8px_15px_rgba(0,0,0,0.4)]");
-    applyClasses(".btnM", "block w-full px-5 py-4 text-left shadow-[0_8px_15px_rgba(0,0,0,0.4)] rounded-b-lg duration-500 hover:scale-110");
-    applyClasses(".btnBK", "h-[45px] w-[45px] rounded-full text-[20px] bg-[radial-gradient(circle_at_25%_20%,#6dd5fa,#003366)] shadow-[0_8px_15px_rgba(0,0,0,0.4)] duration-500 hover:scale-125");
-    applyClasses(".btnSV", "h-[50px] w-[50px] rounded-full text-[20px] bg-[radial-gradient(circle_at_25%_20%,#e3524f,#5374b8)] shadow-[0_8px_15px_rgba(0,0,0,0.4)] duration-500 hover:scale-125");
-    applyClasses(".d1", "mt-5 w-[250px] rounded-[50px] text-white bg-gradient-to-r from-pink-800 to-blue-600");
-
-    document.addEventListener("DOMContentLoaded", () => {
-        function setupShortcuts(inputId, shortcuts) {
-            const input = document.getElementById(inputId);
-            if (!input) return;
-            input.addEventListener("keydown", (e) => { const key = e.key.toLowerCase(); if (shortcuts[key]) {e.preventDefault(); input.value = shortcuts[key]; } });
-        }
-
-        setupShortcuts("mStatus", { "m": "Married", "u": "Unmarried", "g": "gaSwa", "v": "Vidhur", "s": "Swargiya",});
-        setupShortcuts("njmf", { "n": "Niyani", "j": "Jamai", "m": "Male", "f": "Female" });
-        setupShortcuts("group", { "d": "Delivala", "a": "PatelA", "b": "PatelB", "v": "Visrambapa",});
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const wrapperClass = "relative mt-4";
-        const inputClass = "peer w-full px-1 pt-2 border-b-2 border-gray-500 bg-transparent focus:outline-none focus:border-yellow-600";
-        const labelClass = "absolute top-2 left-0 text-gray-500 dark:text-gray-400 transform -translate-y-5 scale-[.8] peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-[1] peer-focus:-translate-y-5 peer-focus:scale-[.8]";
-
-        const inputs = document.querySelectorAll('.input-box');
-
-        inputs.forEach((input, index) => {
-            const label = input.nextElementSibling;
-            if (!label || label.tagName !== "LABEL") return;
-
-            const wrapper = document.createElement("div");
-            wrapper.className = wrapperClass;
-            input.parentNode.insertBefore(wrapper, input);
-            wrapper.appendChild(input);
-            wrapper.appendChild(label);
-
-            input.classList.add(...inputClass.split(' '));
-            label.classList.add(...labelClass.split(' '));
-            input.setAttribute("placeholder", " ");
-            input.setAttribute("autocomplete", "off");
-
-            // Auto capitalization
-            if (input.type === "text") {
-                input.addEventListener('input', function () {
-                    const start = this.selectionStart;
-                    const end = this.selectionEnd;
-                    this.value = this.value.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
-                    this.setSelectionRange(start, end);
-                });
-            }
-
-            // Enter → Next input
-            input.addEventListener("keydown", function (e) {
-                if (e.key === "Enter") {
-                    e.preventDefault(); // stop form submit
-                    const nextInput = inputs[index + 1];
-                    if (nextInput) {
-                        nextInput.focus();
-                    }
-                }
-            });
+    function applyClasses(selector, classes, attrs = {}) {
+        document.querySelectorAll(selector).forEach(el => {
+            if (classes) {el.classList.add(...classes.split(" "));}
+            for (const [key, value] of Object.entries(attrs)) {el.setAttribute(key, value);}
         });
-    });
+    }
+    applyClasses(".btnM", "block w-full px-5 py-4 text-left rounded shadow-[0_8px_15px_rgba(0,0,0,0.8)] duration-500 hover:scale-110");
+    applyClasses(".lbl", "text-right text-gray-500 font-medium");
+    applyClasses(".inp", "bg-gray-100 py-1 border-b-2 border-green-500", { type: "text", autocomplete: "off" });
 
-    window.fetchAllOnce = async function () { 
-        if (cachedData.length > 0) { return cachedData;}  
+    window.fetchAllOnce = async function () {
+        if (cachedData.length > 0) { return cachedData; }  
         const snapshot = await getDocs(tranCol);
         cachedData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
         return cachedData; 
     };
-    
-    window.showCont = function (...idToShow) {
-        const allIds = ['menuCont', 'eleCont', 'ancCont', 1, 'sanCont', 'selCont', 'tblCont', 'lgnCont'];
-        allIds.forEach(id => { 
-            const el = document.getElementById(id); 
-            if (el) { el.style.setProperty('display', 'none', 'important'); } 
-        });
 
-        idToShow.forEach(id => { 
-            const el = document.getElementById(id); 
-            if (el) { el.style.setProperty('display', 'block', 'important'); } 
-        });
-    };   
+    window.clearInput = function () { document.querySelectorAll("input").forEach(el => { el.value = ""; }); loadDropdownData();};
 
-    window.clear = function () { document.querySelectorAll("input").forEach(el => { el.value = ""; }); };
-    
-    window.loadDropdownData = async function () { 
-        const transactionsData = await fetchAllOnce();
-        const nokhSet = new Set();
-        const mnameSet = new Set();
-        const placeSet = new Set();
-
-        transactionsData.forEach((data, i) => {
-            const nokh = [data.nokh];
-            nokh.forEach((n) => { if (n && n.trim().length > 0) {nokhSet.add(n.trim()); } });
-
-            const mnames = [data.name,data.fName,data.mName,data.gfName,data.gmName];
-            mnames.forEach((n) => { if (n && n.trim().length > 0) {mnameSet.add(n.trim()); } });
-
-            const places = [data.place];
-            places.forEach((n) => { if (n && n.trim().length > 0) {placeSet.add(n.trim()); } });
-        });
-
-        const nokh_list = [...nokhSet].sort((a, b) => a.localeCompare(b));
-        const mname_list = [...mnameSet].sort((a, b) => a.localeCompare(b));
-        const place_list = [...placeSet].sort((a, b) => a.localeCompare(b));
-
-        attachDropdown(document.getElementById("nokh"), nokh_list);
-        ["name","fName","mName","gfName","gmName","name1","fName1","mName1","gfName1","gmName1"].forEach(id => attachDropdown(document.getElementById(id), mname_list));
-        //attachDropdown(document.getElementById("mStatus"), ["Married","Unmarried","Vidhur","gaSwa","Swargiya"]);
-        //attachDropdown(document.getElementById("njmf"), ["Niyani","Jamai","Male","Female"]);
-        //attachDropdown(document.getElementById("group"), ["Delivala","PatelA","PatelB","Visrambapa"]);
-        attachDropdown(document.getElementById("place"), place_list);
-    }; 
-    
-    window.attachDropdown = function (inputElement, dataList) {
-        if (inputElement._dropdownCleanup) { inputElement._dropdownCleanup(); }
-        let wrapper = inputElement.parentElement;
-        let currentList = [];
-        let highlightedIndex = -1;
-
-        if (!wrapper.classList.contains("relative")) {
-            wrapper = document.createElement("div");
-            wrapper.className = "relative w-full";
-            inputElement.parentNode.insertBefore(wrapper, inputElement);
-            wrapper.appendChild(inputElement);
-        }
-
-        let dropdown = document.createElement("ul");
-        dropdown.className = "absolute z-50 w-full h-[500px] overflow-y-auto hidden rounded-b text-black bg-gray-100 dark:bg-gray-900 dark:text-white";
-        wrapper.appendChild(dropdown);
-
-        function filterList() {
-            const search = inputElement.value.toLowerCase();
-            currentList = dataList.filter(item => item.toLowerCase().includes(search) );
-
-            highlightedIndex = -1;
-            if (currentList.length > 0) {
-                populateDropdown(currentList);
-                dropdown.classList.remove("hidden");
-            } else {dropdown.classList.add("hidden"); }
-        }
-
-        function populateDropdown(list) {
-            dropdown.innerHTML = "";
-            list.forEach((item, index) => {
-                const li = document.createElement("li");
-                li.textContent = item;
-                li.dataset.index = index;
-                li.className = "block w-full max-w-md px-2 py-2 text-left cursor-pointer hover:bg-blue-700 hover:text-white border-b border-gray-400 last:border-b-0";
-                li.addEventListener("mousedown", () => { inputElement.value = item; dropdown.classList.add("hidden"); });
-                dropdown.appendChild(li);
-            });
-        }
-
-        function highlightItem(index) {
-            const items = dropdown.querySelectorAll("li");
-            items.forEach((li, i) => {
-                if (i === index) {li.classList.add("bg-blue-700", "text-white"); } 
-                else { li.classList.remove("bg-blue-700", "text-white"); }
-            });
-        }
-
-        const onInput = () => { filterList(); };
-        const onClick = () => { filterList(); };
-        const onDocClick = (e) => { if (!wrapper.contains(e.target)) dropdown.classList.add("hidden"); };
-
-        const onKeyDown = (e) => {
-            if (dropdown.classList.contains("hidden")) return;
-
-            const items = dropdown.querySelectorAll("li");
-            if (items.length === 0) return;
-
-            switch (e.key) {
-                case "ArrowDown":
-                    e.preventDefault();
-                    highlightedIndex = (highlightedIndex + 1) % items.length;
-                    highlightItem(highlightedIndex);
-                    break;
-
-                case "ArrowUp":
-                    e.preventDefault();
-                    highlightedIndex = (highlightedIndex - 1 + items.length) % items.length;
-                    highlightItem(highlightedIndex);
-                    break;
-
-                case "Enter":
-                    e.preventDefault();
-                    if (highlightedIndex >= 0 && highlightedIndex < items.length) {
-                        inputElement.value = items[highlightedIndex].textContent;
-                        dropdown.classList.add("hidden");
-                    }
-                    break;
-
-                case "Escape":
-                    dropdown.classList.add("hidden");
-                    break;
-            }
-        };
-
-        inputElement.addEventListener("input", onInput);
-        inputElement.addEventListener("click", onClick);
-        inputElement.addEventListener("keydown", onKeyDown);
-        document.addEventListener("click", onDocClick);
-
-        inputElement._dropdownCleanup = () => {
-            inputElement.removeEventListener("input", onInput);
-            inputElement.removeEventListener("click", onClick);
-            inputElement.removeEventListener("keydown", onKeyDown);
-            document.removeEventListener("click", onDocClick);
-            if (dropdown.parentNode) dropdown.parentNode.removeChild(dropdown);
-            inputElement._dropdownCleanup = null;
-        };
+    window.showEle = function (...ids) {
+        Array.from(document.body.children).forEach(el => {el.classList.add("hidden");});
+        const container = document.getElementById("formCont");
+        Array.from(container.children).forEach(el => {el.classList.add("hidden");});
+        ids.forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove("hidden"); });
     };
-    
+
+    window.attachDropdown = function (input, items) {
+        const formCont = document.getElementById("formCont");
+        formCont.classList.add("relative");
+        const list = document.createElement('div');
+        list.className = 'absolute z-10 w-full bg-white rounded-b-lg max-h-60 overflow-y-auto hidden border border-gray-500';
+        formCont.appendChild(list);
+
+        let filtered = items.slice();
+        let index = -1;
+        let open = false;
+
+        function render() {
+            const rect = input.getBoundingClientRect();
+            list.style.width = rect.width + "px";
+            list.style.left = input.offsetLeft + "px";
+            list.style.top = input.offsetTop + input.offsetHeight + "px";
+
+            list.innerHTML = '';
+            if (open && (input.value.trim() !== '' || filtered.length > 0)) {list.classList.remove('hidden');} 
+            else {list.classList.add('hidden');}
+            filtered.forEach((item, i) => {
+                const div = document.createElement('div');
+                div.textContent = item;
+                div.className = 'px-2 py-1 cursor-pointer hover:bg-blue-700 hover:text-white border-b border-gray-500 last:border-b-0';
+                if (i === index) div.classList.add('bg-blue-500', 'text-white');
+                div.addEventListener('mousedown', e => e.preventDefault());
+                div.addEventListener('click', () => select(item));
+                list.appendChild(div);
+            });
+        }
+
+        function select(value) {
+            input.value = value;
+            list.classList.add('hidden');
+            const allInputs = Array.from(document.querySelectorAll('#formCont input:not([type="hidden"])'));
+            const currentIndex = allInputs.indexOf(input);
+            if (currentIndex !== -1 && allInputs[currentIndex + 1]) {
+                allInputs[currentIndex + 1].focus();
+            }
+        }
+
+        input.addEventListener('focus', () => { open = true; render(); });
+        input.addEventListener('blur', () => { setTimeout(() => { open = false; render(); }, 150); });
+        input.addEventListener('input', () => {
+            const q = input.value.toLowerCase();
+            filtered = items.filter(i => i.toLowerCase().includes(q));
+            index = -1;
+            render();
+        });
+        input.addEventListener('keydown', e => {
+            if (e.key === 'ArrowDown') { e.preventDefault(); index = Math.min(index + 1, filtered.length - 1); render(); }
+            else if (e.key === 'ArrowUp') { e.preventDefault(); index = Math.max(index - 1, 0); render(); }
+            else if (e.key === 'Enter') { e.preventDefault(); if (index >= 0) select(filtered[index]); }
+            else if (e.key === 'Escape') list.classList.add('hidden');
+        });
+    }
+
+    window.loadDropdownData = async function () {
+        const nokhSet = new Set();
+        const nameSet = new Set();
+        const placeSet = new Set();
+        cachedData.forEach(d => {
+            if (d.nokh?.trim()) nokhSet.add(d.nokh.trim());
+            if (d.name?.trim()) nameSet.add(d.name.trim());
+            if (d.fName?.trim()) nameSet.add(d.fName.trim());
+            if (d.place?.trim()) placeSet.add(d.place.trim());
+        });
+        const dropdownData = {
+            '12': [...nokhSet].sort(),
+            '14': [...nameSet].sort(),
+            '16': [...nameSet].sort(),
+            '18': [...nameSet].sort(),
+            '20': [...nameSet].sort(),
+            '22': [...nameSet].sort(),
+            '24': ['Married', 'Unmarried', 'Vidhur', 'Gaswa', 'Swargiya'],
+            '26': ["Niyani", "Jamai", "Male", "Female"],
+            '28': [...placeSet].sort(),
+            '30': [],
+        };
+
+        Object.keys(dropdownData).forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {attachDropdown(input, dropdownData[id]);}
+            if (input.type === "text") {
+            input.addEventListener('input', function () {
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+                this.value = this.value.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+                this.setSelectionRange(start, end);
+            });
+        }
+        });
+    };
+
     window.createEditableTable = function (rows, columns, showDelete = true, showUpdate = true, editable = false) {
         if (window.table && typeof window.table.destroy === "function") window.table.destroy();
         const isMobile = window.innerWidth < 768;  
@@ -400,7 +264,7 @@
             layout: "fitDataFill",
             reactiveData: true,
             rowHeight: 40,
-            maxHeight: "600px",
+            maxHeight: "675px",
             headerVisible: !isMobile,
             columns: fullColumns,
             rowFormatter: isMobile ? function (row) {
@@ -451,12 +315,12 @@
                 }
             } : undefined
         });
-
+        table.on("headerDblClick", function(e, column){ let field = column.getField();  table.deleteColumn(field); });
         document.getElementById('exlbtn')?.addEventListener("click", () => { window.table.download("xlsx", "data.xlsx", { sheetName: "Sheet1" }); });
         document.getElementById('pdfBtn')?.addEventListener("click", () => { window.table.download("pdf", "data.pdf", { orientation: "portrait" }); });
         document.getElementById('prtBtn')?.addEventListener("click", () => { window.table.print(false, true); });
         bindSearch(); 
-        showCont("tblCont");
+        showEle("tblCont");
     };    
 
     window.bindSearch = function () {
@@ -470,9 +334,8 @@
     };
    
     window.showTransactionContainer = function (rowData) {
-        clear(); 
-        showCont('eleCont');
-        
+        clearInput(); 
+        showEle('eleCont');
         for (const key in rowData) {
             if (rowData.hasOwnProperty(key)) {
                 const input = document.getElementById(key); 
@@ -481,19 +344,17 @@
         }
     };
 
-    window.saveTransaction = async function () { 
-        const nokh = document.getElementById("nokh").value.trim();
-        const name = document.getElementById("name").value.trim();
-        const fName = document.getElementById("fName").value.trim();
-        const mName = document.getElementById("mName").value.trim();
-        const gfName = document.getElementById("gfName").value.trim();
-        const gmName = document.getElementById("gmName").value.trim();
-        const mStatus = document.getElementById("mStatus").value.trim();
-        const njmf = document.getElementById("njmf").value.trim();
-        const dob = document.getElementById("dob").value.trim();
-        const mob = document.getElementById("mob").value;
-        const place = document.getElementById("place").value.trim();
-        const group = document.getElementById("group").value.trim();
+    window.saveTransaction = async function () {
+        const nokh = document.getElementById("12").value.trim();
+        const name = document.getElementById("14").value.trim();
+        const fName = document.getElementById("16").value.trim();
+        const mName = document.getElementById("18").value.trim();
+        const gfName = document.getElementById("20").value.trim();
+        const gmName = document.getElementById("22").value.trim();
+        const mStatus = document.getElementById("24").value.trim();
+        const njmf = document.getElementById("26").value.trim();
+        const mob = document.getElementById("28").value;
+        const place = document.getElementById("30").value.trim();
         
         if (!nokh || !name || !fName || !mName || !gfName || !gmName || !mStatus || !njmf ) { 
             return alert("Please fill all required fields properly"); 
@@ -501,16 +362,6 @@
 
         const tranData = {nokh, name, fName, mName, gfName, gmName, mStatus, njmf, };
 
-        if (nokh === "Kalariya") {
-            if (!group) return alert('Please select one of the group(PatelA,PatelB...)')
-            tranData.group = group;
-            if (njmf === "Niyani") tranData.njgp = "Niyani";
-            if (njmf === "Jamai") tranData.njgp = "Jamai";
-            if (njmf === "Male") tranData.njgp = "Gotri";
-            if (njmf === "Female") tranData.njgp = "Putravadhu";
-        }
-
-        if (dob) tranData.dob = dob;
         if (mob) tranData.mob = Number(mob);
         if (place) tranData.place = place;
         if (mStatus === "Swargiya") tranData.place = "Vaikunth";
@@ -522,21 +373,19 @@
             
             if (index !== -1) { cachedData[index] = { ...cachedData[index], ...tranData }; }
             viewAllData();
-        } else {
+        } 
+        else {
             const newDocRef = await addDoc(tranCol, tranData); 
             cachedData.push({ id: newDocRef.id, ...tranData });
         }
-        
-        clear(); 
+        clearInput(); 
         currentDocId = null; 
-        loadDropdownData();
-        document.activeElement.blur();
+        //document.activeElement.blur();
         document.getElementById("nokh").focus();
     };
     
-    function findSpecificDocument(name, fName, mName, gfName, gmName, data) {
+    window.findSpecificDocument = function (name, fName, mName, gfName, gmName, data) {
         if (!data || data.length === 0) {return null; }
-        
         const result = data.find(doc => {
             if (doc.name !== name) { return false;}
             if (fName && doc.fName !== fName) {return false;}
@@ -545,14 +394,12 @@
             if (gmName && doc.gmName !== gmName) {return false;}
             return true;
         });
-        
         return result || null;
     };
 
-    async function collectAncestorData(personData, data, ancestorList = []) {
+    window.collectAncestorData = async function (personData, data, ancestorList = []) {
         if (!personData) { return ancestorList; }
         ancestorList.push(personData);
-        
         const fNameOfCurrent = personData.fName;
         const gfNameOfCurrent = personData.gfName;
         const gmNameOfCurrent = personData.gmName;
@@ -565,120 +412,95 @@
     };
     
     window.findAndDisplayAncestors = async function (startData) {
-        const resultsDiv = document.getElementById("result");
+        const resultsDiv = document.getElementById("sanCont");
         resultsDiv.innerHTML = '';
         if (!startData || !startData.name) {
             resultsDiv.innerHTML += `<p>Please enter a name to start the search.</p>`; 
             return;
         }
-
-        try {
-            const allFamilyData = await window.fetchAllOnce();
-            const initialPersonData = findSpecificDocument(startData.name, startData.fName, startData.mName, startData.gfName, startData.gmName, allFamilyData );
-            
-            if (!initialPersonData) {
-                resultsDiv.innerHTML += `<p>No person matching the provided details was found.</p>`; 
-                return; 
-            }
-
-            const ancestorList = await collectAncestorData(initialPersonData, allFamilyData);
-            let outputHtml = '';
-            const displayedNames = new Set();
-
-            ancestorList.forEach((personData) => {
-                const name = personData.name;
-                const fName = personData.fName;
-                const mName = personData.mName;
-                const gfName = personData.gfName;
-                const gmName = personData.gmName;
-
-                if (name && !displayedNames.has(name)) {
-                    outputHtml += `<div class="px-1 py-1"><span>Name :</span> ${name}</div><div class="border-b border-gray-400"></div>`; 
-                    displayedNames.add(name);
-                }
-                if (fName && !displayedNames.has(fName)) {
-                    outputHtml += `<div class="px-1 py-1 text-yellow-600"><span>Father :</span> ${fName}</div>`; 
-                    displayedNames.add(fName);
-                }
-                if (mName && !displayedNames.has(mName)) {
-                    outputHtml += `<div class="px-1 py-1 text-green-500"><span>Mother :</span> ${mName}</div><div class="border-b border-gray-400"></div>`; 
-                    displayedNames.add(mName); }
-                if (gfName && !displayedNames.has(gfName)) {
-                    outputHtml += `<div class="px-1 py-1 text-yellow-600"><span>Grandfather :</span> ${gfName}</div>`; displayedNames.add(gfName);
-                }
-                if (gmName && !displayedNames.has(gmName)) {
-                    outputHtml += `<div class="px-1 py-1 text-green-500"><span>Grandmother :</span> ${gmName}</div><div class="border-b border-gray-400"></div>`; 
-                    displayedNames.add(gmName);
-                }
-            });
-            resultsDiv.innerHTML = `${outputHtml}`;
-        } catch (error) {console.error("Error finding ancestor chain:", error); 
-            resultsDiv.innerHTML += `<p>An error occurred. Please check the console.</p>`;
+        const allFamilyData = await window.fetchAllOnce();
+        const initialPersonData = findSpecificDocument(startData.name, startData.fName, startData.mName, startData.gfName, startData.gmName, allFamilyData );
+        if (!initialPersonData) {
+            resultsDiv.innerHTML += `<p>No person matching the provided details was found.</p>`; 
+            return; 
         }
+        const ancestorList = await collectAncestorData(initialPersonData, allFamilyData);
+        let outputHtml = '';
+        const displayedNames = new Set();
+
+        ancestorList.forEach((personData) => {
+            const name = personData.name;
+            const fName = personData.fName;
+            const mName = personData.mName;
+            const gfName = personData.gfName;
+            const gmName = personData.gmName;
+
+            if (name && !displayedNames.has(name)) {
+                outputHtml += `<div class="px-1 py-1"><span>Name :</span> ${name}</div><div class="border-b border-gray-400"></div>`; 
+                displayedNames.add(name);
+            }
+            if (fName && !displayedNames.has(fName)) {
+                outputHtml += `<div class="px-1 py-1 text-yellow-600"><span>Father :</span> ${fName}</div>`; 
+                displayedNames.add(fName);
+            }
+            if (mName && !displayedNames.has(mName)) {
+                outputHtml += `<div class="px-1 py-1 text-green-500"><span>Mother :</span> ${mName}</div><div class="border-b border-gray-400"></div>`; 
+                displayedNames.add(mName); }
+            if (gfName && !displayedNames.has(gfName)) {
+                outputHtml += `<div class="px-1 py-1 text-yellow-600"><span>Grandfather :</span> ${gfName}</div>`; displayedNames.add(gfName);
+            }
+            if (gmName && !displayedNames.has(gmName)) {
+                outputHtml += `<div class="px-1 py-1 text-green-500"><span>Grandmother :</span> ${gmName}</div><div class="border-b border-gray-400"></div>`; 
+                displayedNames.add(gmName);
+            }
+        });
+        resultsDiv.innerHTML = `${outputHtml}`;
     };
 
     window.startSearch = function () {
         const startData = { 
-            name: document.getElementById("name1").value.trim(),
-            fName: document.getElementById("fName1").value.trim(), 
-            mName: document.getElementById("mName1").value.trim(), 
-            gfName: document.getElementById("gfName1").value.trim(), 
-            gmName: document.getElementById("gmName1").value.trim(),
+            name: document.getElementById("14").value.trim(),
+            fName: document.getElementById("16").value.trim(), 
+            mName: document.getElementById("18").value.trim(), 
+            gfName: document.getElementById("20").value.trim(), 
+            gmName: document.getElementById("22").value.trim(),
         };
-
         window.findAndDisplayAncestors(startData);
     };
     
-    window.viewAllData = async function (showDelete = true, showUpdate = true, editable = false, type) {
+    window.viewAllData = async function (showDelete = true, showUpdate = true) {
         const allData = await window.fetchAllOnce();
         const rows = [];
         
         allData.forEach((data) => {
-            const dob = (data.dob || "").trim();
-
-            if (data && (data.name?.trim() || data.fName?.trim() || data.mName?.trim())) {
-                rows.push({
-                    id: data.id,
-                    nokh: data.nokh,
-                    name: data.name,
-                    fName: data.fName,
-                    mName: data.mName,
-                    gfName: data.gfName,
-                    gmName: data.gmName,
-                    dob: data.dob || "",
-                    mStatus: data.mStatus,
-                    njmf: data.njmf,
-                    mob: data.mob,
-                    place: data.place,
-                    group: data.group,
-                    displayDob: dob ? dob.split('-').reverse().join('-').replace(/(\d{2})-(\d{4})$/, '$1-$2') : "N/A",
-                });
-            }
+            rows.push({
+                id: data.id,
+                nokh: data.nokh,
+                name: data.name,
+                fName: data.fName,
+                mName: data.mName,
+                gfName: data.gfName,
+                gmName: data.gmName,
+                mStatus: data.mStatus,
+                njmf: data.njmf,
+                place: data.place,
+                mob: data.mob,
+            });
         });
 
-        const allColumns = [
+        const columns = [
             {title: "Parivar", field: "nokh"}, 
             {title: "Name", field: "name"}, 
             {title: "Father", field: "fName"}, 
             {title: "Mother", field: "mName"}, 
             {title: "GrFather", field: "gfName"}, 
-            {title: "GrMother", field: "gmName"}, 
-            {title: "DOB", field: "displayDob"}, 
+            {title: "GrMother", field: "gmName"},
             {title: "MStatus", field: "mStatus"}, 
-            {title: "N/J/M/F", field: "njmf"}, 
-            {title: "Mob No", field: "mob"},
+            {title: "NJMF", field: "njmf"},
             {title: "Place", field: "place"},
-            {title: "Group", field: "group"}, 
+            {title: "Mob No", field: "mob"},
         ];
-
-        if (type) {
-            const selectedFields = Array.from(document.querySelectorAll('#selCont input:checked')).map(cb => cb.value);
-            const columns = selectedFields.length > 0 
-                ? allColumns.filter(col => selectedFields.includes(col.field))
-                : allColumns;
-            createEditableTable(rows, columns, showDelete, showUpdate, editable);
-
-        } else {createEditableTable(rows, allColumns, showDelete, showUpdate, editable);} 
+        createEditableTable(rows, columns, showDelete, showUpdate); 
     };
 
     window.sankhya = async function () {
@@ -718,21 +540,26 @@
             if (njmf === "Male") {
                 groupCounts[group].Male++;
                 totalCounts.Male++;
-            } else if (njmf === "Female") {
+            } 
+            else if (njmf === "Female") {
                 groupCounts[group].Female++;
                 totalCounts.Female++;
-            } else if (njmf === "Niyani") {
+            } 
+            else if (njmf === "Niyani") {
                 if (mStatus === "Married") {
                     groupCounts[group].MarriedNiyani++;
                     totalCounts.MarriedNiyani++;
-                } else if (mStatus === "Unmarried") {
+                } 
+                else if (mStatus === "Unmarried") {
                     groupCounts[group].UnmarriedNiyani++;
                     totalCounts.UnmarriedNiyani++;
-                } else if (mStatus === "gaSwa") {
+                } 
+                else if (mStatus === "gaSwa") {
                     groupCounts[group].GaSwaNiyani++;
                     totalCounts.GaSwaNiyani++;
                 }
-            } else if (njmf === "Jamai") {
+            } 
+            else if (njmf === "Jamai") {
                 groupCounts[group].Jamai++;
                 totalCounts.Jamai++;
             }
@@ -787,184 +614,61 @@
             `;
             container.appendChild(card);
         }
-        showCont(1,'sanCont',);
+        showEle('formCont','bBtn','sanCont',);
     };
 
-    window.sankhyaKalariya = async function () {
+    window.topStats = async function () {
         const allData = await window.fetchAllOnce();
-        const container = document.getElementById("sanCont");
-        container.innerHTML = "";
+        const freqNames = {};
+        const freqPlaces = {};
 
-        const groupCounts = {};
-        const totalCounts = { 
-            Gotri: 0, 
-            PV: 0, 
-            UnmarriedNiyani: 0, 
-            MarriedNiyani: 0, 
-            GaSwaNiyani: 0, 
-            Jamai: 0 
-        };
+        allData.forEach(item => {
+            const name = item.name?.trim();
+            if (name) freqNames[name] = (freqNames[name] || 0) + 1;
 
-        allData.forEach((data) => {
-            if (!data || !data.group) return;
-            const group = data.group;
-            const njgp = data.njgp?.trim();
-            const mStatus = data.mStatus?.trim();
-
-            if (mStatus === "Swargiya") return;
-
-            if (!groupCounts[group]) {
-                groupCounts[group] = { 
-                    Gotri: 0, 
-                    PV: 0, 
-                    UnmarriedNiyani: 0,
-                    MarriedNiyani: 0,  
-                    GaSwaNiyani: 0, 
-                    Jamai: 0, 
-                };
-            }
-
-            if (njgp === "Gotri") {
-                groupCounts[group].Gotri++;
-                totalCounts.Gotri++;
-            } else if (njgp === "Putravadhu") {
-                groupCounts[group].PV++;
-                totalCounts.PV++;
-            } else if (njgp === "Niyani") {
-                if (mStatus === "Married") {
-                    groupCounts[group].MarriedNiyani++;
-                    totalCounts.MarriedNiyani++;
-                } else if (mStatus === "Unmarried") {
-                    groupCounts[group].UnmarriedNiyani++;
-                    totalCounts.UnmarriedNiyani++;
-                } else if (mStatus === "gaSwa") {
-                    groupCounts[group].GaSwaNiyani++;
-                    totalCounts.GaSwaNiyani++;
-                }
-            } else if (njgp === "Jamai") {
-                groupCounts[group].Jamai++;
-                totalCounts.Jamai++;
-            }
+            const place = item.place?.trim();
+            if (place && place !== "Vaikunth") freqPlaces[place] = (freqPlaces[place] || 0) + 1;
         });
 
-        const totalNiyaniAll = totalCounts.MarriedNiyani + totalCounts.UnmarriedNiyani + totalCounts.GaSwaNiyani;
-        const grandTotalAll = totalCounts.Gotri + totalCounts.PV + totalNiyaniAll + totalCounts.Jamai;
+        const sortedNames = Object.entries(freqNames)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
 
-        const summaryCard = document.createElement("div");
-        summaryCard.style.border = "2px solid #444";
-        summaryCard.style.padding = "15px";
-        summaryCard.style.borderRadius = "10px";
-        summaryCard.style.background = "#f3f4f6";
-        summaryCard.style.boxShadow = "3px 3px 10px rgba(0,0,0,0.2)";
-        summaryCard.style.lineHeight = "1.4";
-
-        summaryCard.innerHTML = `
-            <div><h3 class="text-lg font-bold mb-2 py-2 text-center text-white bg-gradient-to-r from-blue-700 to-green-700 rounded-t-lg shadow">🌟 Total of All Parivars 🌟</h3></div>
-            <div style="color: blue;">Unmarried Niyani: ${totalCounts.UnmarriedNiyani}</div>
-            <div style="color: blue;">Married Niyani: ${totalCounts.MarriedNiyani}</div>
-            <div style="color: blue;">GaSwa Niyani: ${totalCounts.GaSwaNiyani}</div>
-            <div style="color: red;">Total Niyani: ${totalNiyaniAll}</div>
-            <div style="color: red;">Total Jamai: ${totalCounts.Jamai}</div>
-            <div style="color: #064996;">Total Gotri: ${totalCounts.Gotri}</div>
-            <div style="color: #064996;">Total Putravadhu: ${totalCounts.PV}</div>
-            <div class="text-black">Grand Total: ${grandTotalAll}</div>
-        `;
-        container.appendChild(summaryCard);
-
-        for (const [group, counts] of Object.entries(groupCounts)) {
-            const totalNiyani = counts.MarriedNiyani + counts.UnmarriedNiyani + counts.GaSwaNiyani;
-            const grandTotal = counts.Gotri + counts.PV + totalNiyani + counts.Jamai;
-
-            const card = document.createElement("div");
-            card.style.border = "2px solid #444";
-            card.style.padding = "15px";
-            card.style.borderRadius = "10px";
-            card.style.background = "#f3f4f6";
-            card.style.boxShadow = "3px 3px 10px rgba(0,0,0,0.2)";
-            card.style.lineHeight = "1.4";
-
-            card.innerHTML = `
-                <div><h3 class="text-lg font-bold mb-2 py-2 text-center text-white bg-gradient-to-r from-blue-700 to-green-700 rounded-t-lg shadow">🌟 ${group} Parivar 🌟</h3></div>
-                <div style="color: blue;">Unmarried Niyani: ${counts.UnmarriedNiyani}</div>
-                <div style="color: blue;">Married Niyani: ${counts.MarriedNiyani}</div>
-                <div style="color: blue;">GaSwa Niyani: ${counts.GaSwaNiyani}</div>
-                <div style="color: red;">Total Niyani: ${totalNiyani}</div>
-                <div style="color: red;">Total Jamai: ${counts.Jamai}</div>
-                <div style="color: #064996;">Total Gotri: ${counts.Gotri}</div>
-                <div style="color: #064996;">Total Putravadhu: ${counts.PV}</div>
-                <div class="text-black">Grand Total: ${grandTotal}</div>
-            `;
-            container.appendChild(card);
-        }
-        document.getElementById(1).className = "absolute top-[27px] left-[15px] z-50";
-        showCont(1,'sanCont');
-    };
-
-    window.topStats = async function (type = "names") {
-        const allData = await window.fetchAllOnce();
-        const freqMap = {};
-
-        if (type === "names") {
-            allData.forEach(item => {
-                ['name','fName','mName','gfName','gmName'].forEach(field => {
-                    const value = item[field]?.trim();
-                    if (value) freqMap[value] = (freqMap[value] || 0) + 1;
-                });
-            });
-        } else if (type === "places") {
-            allData.forEach(item => {
-                const name = item.name?.trim();
-                const place = item.place?.trim();
-                if (name && place) {
-                    freqMap[place] = (freqMap[place] || 0) + 1;
-                }
-            });
-        }
-
-        const sortedData = Object.entries(freqMap)
+        const sortedPlaces = Object.entries(freqPlaces)
             .sort((a, b) => b[1] - a[1])
             .slice(0, 5);
 
         const container = document.getElementById('sanCont');
         container.innerHTML = '';
-        const header = document.createElement('h3');
-        header.className ='text-lg font-bold mb-2 text-center text-white p-2 rounded-t-lg shadow';
 
-        if (type === "names") {
-            header.classList.add("bg-gradient-to-r", "from-pink-700", "to-red-400");
-            header.textContent = '🎖️ Top Names Used In Vigodi 🏅';
-        } else {
-            header.classList.add("bg-green-800");
-            header.textContent = '🥇 Top Places With Most People 👨🏻‍👩🏻‍👦🏻‍👦🏻';
-        }
+        const placesHeader = document.createElement('h3');
+        placesHeader.className ='text-lg font-bold mb-2 text-center text-white p-2 rounded-t-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)] bg-green-800';
+        placesHeader.textContent = '🥇 Top Places With Most People 👨🏻‍👩🏻‍👦🏻‍👦🏻';
+        container.appendChild(placesHeader);
 
-        container.appendChild(header);
-
-        sortedData.forEach(([value, count]) => {
+        sortedPlaces.forEach(([value, count]) => {
             const label = document.createElement('label');
-            label.className =
-                'block px-2 py-2 mt-1 shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)] rounded-b-lg';
+            label.className = 'block px-2 py-2 mt-1 shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)] rounded-b-lg';
             label.textContent = `${value} : ${count}`;
             container.appendChild(label);
         });
-        document.getElementById(1).className = "absolute top-[12px] left-[3px] z-50";
-        showCont('sanCont',1);
-    };
 
-    window.changeTheme = function () {
-        const html = document.documentElement;
-        html.classList.toggle('dark');
-        if (html.classList.contains('dark')) {localStorage.theme = 'dark';} 
-        else {localStorage.theme = 'light';}
-    };
+        const namesHeader = document.createElement('h3');
+        namesHeader.className ='text-lg font-bold mb-2 mt-4 text-center text-white p-2 rounded-t-lg shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)] bg-red-800';
+        namesHeader.textContent = '🎖️ Top Names Used In Vigodi 🏅';
+        container.appendChild(namesHeader);
 
-    window.logout = async function () { 
-        showCont();
-        if (confirm("Are you sure you want to logout?")) { 
-            await signOut(auth); showCont("lgnCont"); 
-        } 
+        sortedNames.forEach(([value, count]) => {
+            const label = document.createElement('label');
+            label.className = 'block px-2 py-2 mt-1 shadow-2xl shadow-[0_8px_15px_rgba(0,0,0,0.4)] rounded-b-lg';
+            label.textContent = `${value} : ${count}`;
+            container.appendChild(label);
+        });
+        showEle('formCont','bBtn','sanCont',);
     };
-
+    
+    window.logout = async function () { showEle(); if (confirm("Are you sure you want to logout?")) { await signOut(auth); showEle("lgnCont"); } };
+    
     window.login = async function () {
         const email = document.getElementById("loginEmail").value;
         const password = document.getElementById("loginPassword").value;
@@ -973,9 +677,7 @@
         const docRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(docRef);
         
-        if (docSnap.exists() && docSnap.data().approved === true) { 
-            showCont("menuCont"); 
-        }
+        if (docSnap.exists() && docSnap.data().approved === true) { showEle("menuCont"); }
     };
    
     window.addEventListener("beforeunload", function (e) { e.preventDefault(); e.returnValue = ""; });
